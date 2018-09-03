@@ -140,23 +140,19 @@ on Software Engineering (ICSE 2019)</li>
 <br><h4 style="color:#508a88"><b>Yin Lin</b>, Xinyi Chen, Xiaofeng Gao, Guihai Chen</h4>
 <a href="http://www.dexa.org/"><p><b> (Accepted by) International Conference on Database and Expert Systems Applications(DEXA), 2018 </b></p></a>
 <p>Index plays a very important role in cloud storage systems,
-which can support efficient querying tasks for data-intensive applica-
-tions. However, most of existing indexing schemes for data centers focus
+which can support efficient querying tasks for data-intensive applications. However, most of existing indexing schemes for data centers focus
 on one specific topology and cannot be migrated directly to the other
 networks. In this paper, based on the observation that server-centric data
-center networks (DCNs) are recursively defined, we propose pattern vec-
-tor, which can formulate the server-centric topologies more generally and
+center networks (DCNs) are recursively defined, we propose pattern vector, which can formulate the server-centric topologies more generally and
 design R 2 -Tree, a scalable two-layer indexing scheme with a local R-Tree
-and a global R-Tree to support multi-dimensional query. To show the ef-
-ficiency of R 2 -Tree, we start from a case study for two-dimensional data.
+and a global R-Tree to support multi-dimensional query. To show the efficiency of R 2 -Tree, we start from a case study for two-dimensional data.
 We use a layered global index to reduce the query scale by hierarchy and
 design a method called Mutex Particle Function (MPF) to determine
 the potential indexing range. MPF helps to balance the workload and
 reduce routing cost greatly. Then, we extend R 2 -Tree indexing scheme
 to handle high-dimensional data query efficiently based on the topology
 feature. Finally, we demonstrate the superior performance of R 2 -Tree in
-three typical server-centric DCNs on Amazon’s EC2 platform and vali-
-date its efficiency.</p>	
+three typical server-centric DCNs on Amazon’s EC2 platform and validate its efficiency.</p>	
 		
 		</div>
 	</div>
@@ -203,7 +199,7 @@ date its efficiency.</p>
             <br>
             <strong>Yin Lin</strong>, advised by Prof. <a href="http://www.cs.sjtu.edu.cn/~gao-xf/">Xiaofeng Gao</a>, Jun. 2016 - now <br>
             </p><p><br>
-              R2-Tree is a scalable data center indexing scheme for high dimensional data. It follows the two layer indexing framework in which a global layer is used to locate the physical machine. R2-Tree supports both point and range query. Besides, bloom fliter is also realized to reduce the false possitive in the querying process. The experiments are conducted in Amazon's EC2 platform.
+              R2-Tree is a scalable data center indexing scheme for high dimensional data. It follows the two layer indexing framework where we maintain a global index layer above the structured overlay. We use R-Tree to support both point and range query for high dimensional data. Besides, bloom fliter is also realized to reduce the false possitive in the querying process. The experiments are conducted in Amazon's EC2 platform.
             </p>
           <p></p>
  <p></p>
@@ -227,8 +223,7 @@ system combining the centralized SDN controller and reinforcement learning predi
 collisions and congestions. Firstly, SDN controller in MetisRL gathers historical traffic matrixes
 and monitors the link utilization. Then, reinforcement learning
 component in SDN controller uses these information to perform
-dynamic prediction and output flow scheduling decisions accord-
-ingly. Finally, the implementation of routing protocol is allocated
+dynamic prediction and output flow scheduling decisions accordingly. Finally, the implementation of routing protocol is allocated
 from SDN’s control plane to the data plane via SDN controller.
 We implemented MetisRL in Fat-tree data center network on
 emulated Mininet testbed. 
@@ -286,7 +281,7 @@ emulated Mininet testbed.
             <br>
             <strong>Yin Lin</strong>, advised by Prof. <a href="http://www.cs.sjtu.edu.cn/~yaobin/">Bin Yao </a>, Feb. 2018 - May 2018 <br>
             <br>
-              We construct a database to collect the infomation for all stocks from 2012-2018. We use statistical methods to collect stock infomation and use machine learning method to predict whether a stock can gain profit in the next day.
+              We construct a database to collect the infomation for all stocks from 2012-2018. By using SQL query, We collect stock infomation and do statistical analysis. With these features of the stocks, machine learning method is used to predict whether a stock can gain profit in the next day.
             </p>
           <p></p>
           </td>
@@ -304,7 +299,7 @@ emulated Mininet testbed.
             <br>
             <strong>Yin Lin</strong>, advised by Prof. <a href="http://english.seiee.sjtu.edu.cn/english/detail/741_1052.htm">Shiwen Zhang </a>, Jan. 2017 - May 2018 <br>
             <br>
-	    The applications include the following tasks:
+	    I developed android apps with different function, including:
              <ul>
 		<li><p>Design an Android Application that can control the car via bluetooth, with functions of voice control, key control, gravity sensor control and video collection.</p></li>
 		<li><p>Use Opencv to process the track of the maze and then send bluetooth signal to the car letting it run the maze by itself.</p></li>
