@@ -91,7 +91,7 @@ ul.address li {
 ul.address li ul.address-text li {
     display: inline-block;
     font-size: 1.2em;
-    color: #fff;
+    color: #ffffff;
     margin-top: 1em;
 	font-weight: 100;
 }
@@ -99,11 +99,11 @@ ul.address li ul.address-text li:nth-child(1){
 	width: 20%;
 }
 ul.address li ul.address-text li a {
-    color: #fff;
+    color: #ffffff;
 	text-decoration:none;
 }
 ul.address li ul.address-text li a:hover{
-    color: #0FF;
+    color: #ffffff;
 }
 /*--//banner-top--*/
 /*--top-nav--*/
