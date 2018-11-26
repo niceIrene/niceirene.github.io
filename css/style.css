@@ -6,6 +6,8 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 --*/
 body{
 	margin:0;
+	height=80%;
+	width=80%;
 	font-family: 'Roboto Condensed', sans-serif;
 	background: #fff;
 }
