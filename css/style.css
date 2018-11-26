@@ -34,6 +34,10 @@ body a:hover{
 	text-decoration:none;
 }
 /*--baner--*/
+.container{
+	width: 80%;
+	width: 80%;
+}
 .banner {
 	background:url(../images/a.jpg)no-repeat center 0px;
 	-webkit-background-size:cover;
@@ -53,7 +57,7 @@ body a:hover{
     padding-left: 3em;
 }
 .header-right h1 {
-    font-size: 2.5em;
+    font-size: 2.3em;
     color: #fff;
     margin: 0.5em 0 0;
 }
@@ -77,8 +81,8 @@ body a:hover{
     border-color: #F3E000 transparent transparent transparent;
 }
 .header-right h6 {
-    font-size: 1em;
-    color: #C7C7C7;
+    font-size: 1.1em;
+    color: #F7F7F7;
     margin-top: 0.8em;
     letter-spacing: 6px;
 }
