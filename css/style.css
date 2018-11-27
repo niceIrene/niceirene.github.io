@@ -144,7 +144,7 @@ ul.nav.navbar li a:hover,ul.nav.navbar li a.active,ul.nav.navbar li a:focus{
 	padding:6em 0;
 }
 h3.title {
-    font-size: 3.0em;
+    font-size: 2.0em;
     text-align: center;
     color: #008B8B;
     border-bottom: 4px double rgba(247, 197, 106, 0.35);
@@ -676,7 +676,7 @@ ul.address li ul.address-text li {
     padding: 4em 0;
 }
 h3.title {
-    font-size: 3.6em;
+    font-size: 2.0em;
 	margin-bottom: 0.8em;
 }
 .about-right {
@@ -729,7 +729,7 @@ ul.nav.navbar li a {
     padding: 1em 1.5em;
 }
 h3.title {
-    font-size: 3.5em;
+    font-size: 2.0em;
     margin-bottom: 0.6em;
 }
 .about-left {
@@ -808,7 +808,7 @@ h3.title {
     padding: 3em 0;
 }
 h3.title {
-    font-size: 3.3em;
+    font-size: 2.0em;
     margin-bottom: 0.6em;
 }
 #swipebox-title {
@@ -862,7 +862,7 @@ ul.address {
     padding: 2em 0;
 }
 h3.title {
-    font-size: 2.8em;
+    font-size: 2.0em;
     margin-bottom: 0.5em;
 }
 .about-left {
@@ -919,7 +919,7 @@ h3.title {
     width: 100%;
 }
 h3.title {
-    font-size: 2.5em;
+    font-size: 2.0em;
 }
 p {
     font-size: 0.9em;
