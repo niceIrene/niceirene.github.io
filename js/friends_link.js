@@ -5,6 +5,7 @@ var sites = [
     'https://shengpu1126.github.io/',
     'https://yifanguan.github.io/',
     'https://xingjunjie.me/blog/',
+    'https://pyjhzwh.github.io/',
     'http://www-personal.umich.edu/~pujat/',
     'https://abuyukcakir.github.io/',
     'http://weichaomao.web.illinois.edu/',
