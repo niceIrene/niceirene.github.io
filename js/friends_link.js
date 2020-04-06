@@ -10,7 +10,8 @@ var sites = [
     'https://abuyukcakir.github.io/',
     'http://weichaomao.web.illinois.edu/',
     'https://hongyunyan.github.io/',
-    'https://chaoqiyang.com/'
+    'https://chaoqiyang.com/',
+    'https://ddshan.github.io/'
 ];
 function randomSite() {
     var i = parseInt(Math.random() * sites.length);
