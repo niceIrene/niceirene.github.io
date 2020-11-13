@@ -50,7 +50,7 @@ body a:hover{
 	padding: 4em 0;
 }
 .header-left img {
-    width: 80%;
+    width: 55%;
     border: 5px solid rgba(255, 255, 255, 0.68);
 }
 .header-right {
@@ -152,7 +152,7 @@ h3.title {
 	margin-bottom: 1em;
 }
 p {
-    font-size: 1.2em;
+    font-size: 1.4em;
     color: #707070;
     line-height: 1.8em;
 }
