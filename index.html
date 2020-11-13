@@ -114,8 +114,9 @@
 		<div class="container">
 			<h3 class="title"> About Me</h3>
 			<div class="col-md-8 about-left">
-				<p>Hi, my name is Yin Lin (林茵 in Chinese). I am a second-year Ph.D. student in the Computer Science and Engineering Department at the University of Michigan, Ann Arbor.  I consider myself fortunate to be advised by <a href="https://web.eecs.umich.edu/~jag/">Dr. H. V. Jagadish</a>. My current research focuses on data equality system preventing misuse and misinterpretation of big data. 
-					</p><br><p>I got my bachelor degree from Shanghai Jiao Tong University and was a member of <a href="http://anl.sjtu.edu.cn/en">Advanced Network Laboratory (ANL)</a> under the supervision of <a href="http://www.cs.sjtu.edu.cn/~gao-xf/">Dr. Xiaofeng Gao</a>.
+				<p>Hi, my name is Yin Lin (林茵 in Chinese). I am a second-year Ph.D. student in the Computer Science and Engineering Department at the University of Michigan, Ann Arbor.  I consider myself fortunate to be advised by <a href="https://web.eecs.umich.edu/~jag/">Dr. H. V. Jagadish</a>. 
+					I am a member of the <a href:"http://dbgroup.eecs.umich.edu/">Database group<\a>. My current research focuses on data equality system preventing misuse and misinterpretation of big data. 
+					</p><br><p>I got my bachelor degree from Shanghai Jiao Tong University under the supervision of <a href="http://www.cs.sjtu.edu.cn/~gao-xf/">Dr. Xiaofeng Gao</a>.
 					In my junior year, I worked as a Research Intern in the Software Architecture Group at the University of Waterloo, Canada. My advisor is <a href="https://cs.uwaterloo.ca/~m2nagapp/index.html">Dr. Meiyappan Nagappan</a>.
 
 </p>
@@ -145,12 +146,15 @@ Outside of my research and work, I love playing the GO game, badminton and runni
 	<div id="work" class="education">
 		<div class="container">
 			<h3 class="title">Publication</h3>
-			<b><h3 style="color:#508a88">R2-Tree: An Efficient Indexing Scheme for Server-Centric Data Center Networks <a href="images/R2-Tree_YinLin,XinyinChen.pdf">(pdf)</a></h3></b>
+						<b><h3 style="color:#508a88">1. Identifying Insufficient Data Coverage in Databases with Multiple Relations</h3></b>
+<br><h4 style="color:#508a88"><b>Yin Lin</b>, Yifan Guan, Abolfazl Asudeh, H. V. Jagadish</h4>
+									<b><h3 style="color:#508a88">2. On Structural vs. Proximity-based Temporal Node Embeddings</h3></b>
+<br><h4 style="color:#508a88">Puja Trivedi, Alican Büyükçakır, <b>Yin Lin</b>, Yinlong Qian, Di Jin, Danai Koutra</h4>
+<a href="https://vldb2020.org/"><p><b>MLG 2020</b></p></a>
+<a href="https://vldb2020.org/"><p><b>VLDB 2020</b></p></a>
+			<b><h3 style="color:#508a88">3. R2-Tree: An Efficient Indexing Scheme for Server-Centric Data Center Networks <a href="images/R2-Tree_YinLin,XinyinChen.pdf">(pdf)</a></h3></b>
 <br><h4 style="color:#508a88"><b>Yin Lin</b>, Xinyi Chen, Xiaofeng , Guihai Chen</h4>
 <a href="http://www.dexa.org/"><p><b>DEXA 2018</b></p></a>
-			<b><h3 style="color:#508a88">Identifying Insufficient Data Coverage in Databases with Multiple Relations</h3></b>
-<br><h4 style="color:#508a88"><b>Yin Lin</b>, Yifan Guan, Abolfazl Asudeh, H. V. Jagadish</h4>
-<a href="https://vldb2020.org/"><p><b>VLDB 2020</b></p></a>
 
 <br>
 <HR>
@@ -190,6 +194,23 @@ Outside of my research and work, I love playing the GO game, badminton and runni
 	<div id="projects" class="education">
 		<div class="container">
 			<h3 class="title">Selected Projects</h3>
+	<table width="100%" align="center" border="0" cellpadding="20">
+        <tbody><tr>
+          <td width="25%"><img src="images/patterngraph.jpg" width="220" height="160"></td>
+          <td width="75%" valign="top">
+          <p>
+            <strong>Identifying Insufficient Data Coverage in Databases with Multiple Relations</strong>
+            <br>
+            <strong>UMich</strong>, advised by Prof. <a href="https://web.eecs.umich.edu/~jag/">H. V. Jagadish</a>, Sept. 2019 - July 2020 <br>
+            </p><p><br>
+            We provide an efficient approach for coverage analysis, given a set of attributes across multiple tables.
+To identify regions with insufficient coverage in the combinatorially large set of value combinations, 
+we design an index scheme to avoid explicit table joins, achieve efficient memory usage, and support predicate combination at a high level of parallelism. 
+We also propose P-WALK, a priority-based search algorithm, to traverse the lattice space. Since in practice, coverage assessment typically does not require precise COUNT aggregation results, we further present approximate methods to reduce computation time.
+        </tr>
+        </tbody></table>
+
+<HR>
 
 	<table width="100%" align="center" border="0" cellpadding="20">
         <tbody><tr>
@@ -208,23 +229,6 @@ Outside of my research and work, I love playing the GO game, badminton and runni
           </td>
         </tr>
 </tbody></table>
-
-<HR>
-	<table width="100%" align="center" border="0" cellpadding="20">
-        <tbody><tr>
-          <td width="25%"><img src="images/patterngraph.jpg" width="220" height="160"></td>
-          <td width="75%" valign="top">
-          <p>
-            <strong>Identifying Insufficient Data Coverage in Databases with Multiple Relations</strong>
-            <br>
-            <strong>UMich</strong>, advised by Prof. <a href="https://web.eecs.umich.edu/~jag/">H. V. Jagadish</a>, Sept. 2019 - July 2020 <br>
-            </p><p><br>
-            We provide an efficient approach for coverage analysis, given a set of attributes across multiple tables.
-To identify regions with insufficient coverage in the combinatorially large set of value combinations, 
-we design an index scheme to avoid explicit table joins, achieve efficient memory usage, and support predicate combination at a high level of parallelism. 
-We also propose P-WALK, a priority-based search algorithm, to traverse the lattice space. Since in practice, coverage assessment typically does not require precise COUNT aggregation results, we further present approximate methods to reduce computation time.
-        </tr>
-        </tbody></table>
 
 <HR>
 </tbody></table>
