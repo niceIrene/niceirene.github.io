@@ -1,256 +1,344 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <title>Yin Lin</title>
-<!--mobile apps-->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="keywords" content="My Resume Responsive web template, Bootstrap Web Templates, Flat Web Templates, Android Compatible web template, 
-	SmartPhone Compatible web template, free WebDesigns for Nokia, Samsung, LG, SonyEricsson, Motorola web design" />
-<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
-<!--mobile apps-->
-<!--Custom Theme files-->
+<meta name="description" content="Yin Lin - Algorithm Engineer at Tongyi Lab, Alibaba Group. Research in AI agents and data management.">
 <link href="css/bootstrap.css" type="text/css" rel="stylesheet" media="all">
 <link href="css/style.css" type="text/css" rel="stylesheet" media="all">
-<link rel="stylesheet" href="css/swipebox.css">
-<!--//Custom Theme files-->
-<!--js-->
-<script src="js/jquery-1.11.1.min.js"></script> 
-<!-- //js -->
-<!--web-fonts-->
-<link href='//fonts.googleapis.com/css?family=Overlock:400,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
-<link href='//fonts.googleapis.com/css?family=Roboto+Condensed:400,300,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
-<!--//web-fonts-->
-<!--start-smooth-scrolling-->
+<link href='//fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:wght@400;600;700&display=swap' rel='stylesheet'>
+<script src="js/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="js/move-top.js"></script>
-<script type="text/javascript" src="js/easing.js"></script>	
+<script type="text/javascript" src="js/easing.js"></script>
 <script type="text/javascript">
-		jQuery(document).ready(function($) {
-			$(".scroll").click(function(event){		
-				event.preventDefault();
-				$('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
-			});
+	jQuery(document).ready(function($) {
+		$(".scroll").click(function(event){
+			event.preventDefault();
+			$('html,body').animate({scrollTop:$(this.hash).offset().top - 60},800);
 		});
+	});
 </script>
 <link rel="icon" href="images/favicon.ico" />
-<!--//end-smooth-scrolling-->
 </head>
 <body>
 	<!--banner-->
 	<div id="home" class="banner">
 		<div class="banner-info">
 			<div class="container">
-				<div class="col-md-4 header-left">
-					<img src="images/pic.jpeg" alt=""/>
+				<div class="header-left">
+					<img src="images/pic.jpeg" alt="Yin Lin"/>
 				</div>
-				<div class="col-md-8 header-right">
-					<h1>Yin Lin (林茵)</h1>	
-					<ul class="address">
-						<li>
-							<ul class="address-text">
-								<li><b>E-MAIL</b></li>
-								<li>irenelin[at]umich[dot]edu</li>
-							</ul>
-						</li>
-						<li>
-							<ul class="address-text">
-								<li><b>Github </b></li>
-								<li><u><a href="https://github.com/niceIrene/">niceirene</a></u></li>
-							</ul>
-						</li>
-						<li>
-							<ul class="address-text">
-								<li><b>CV </b></li>
-								<li><u><a href="images/Yin_Lin_cv.pdf">See my CV here! (Updated: Jun. 12, 2024)</a></u></li>
-							</ul>
-						</li>
-						<li>
-							<ul class="address-text">
-								<li><b>Google Scholar </b></li>
-								<li><u><a href="https://scholar.google.com/citations?user=niOo1I4AAAAJ&hl"> Yin Lin</a></u></li>
-							</ul>
-						</li>						
-						<li>
-							<ul class="address-text">
-								<li><b>LinkedIn </b></li>
-								<li><u><a href="https://www.linkedin.com/in/yin-lin-41a06b148/"> Yin Lin</a></u></li>
-							</ul>
-						</li>
-						
-					</ul>
+				<div class="header-right">
+					<h1>Yin Lin <span class="chinese-name">(&#26519;&#33589;)</span></h1>
+					<p class="tagline">Algorithm Engineer &middot; Tongyi Lab, Alibaba Group</p>
+					<p class="tagline-sub">Research Interest: <b>AI Agents</b> &amp; <b>Data Management</b></p>
+					<div class="header-links">
+						<a href="mailto:yin.lin@alibaba-inc.com" class="header-link-item">
+							<span class="link-icon">&#9993;</span> yin.lin[at]alibaba-inc[dot]com
+						</a>
+						<a href="https://github.com/niceIrene/" class="header-link-item">
+							<span class="link-icon">&#128187;</span> GitHub
+						</a>
+						<a href="https://scholar.google.com/citations?user=niOo1I4AAAAJ&hl" class="header-link-item">
+							<span class="link-icon">&#127891;</span> Google Scholar
+						</a>
+						<a href="https://www.linkedin.com/in/yin-lin-41a06b148/" class="header-link-item">
+							<span class="link-icon">&#128101;</span> LinkedIn
+						</a>
+						<a href="images/Yin_Lin_cv.pdf" class="header-link-item">
+							<span class="link-icon">&#128196;</span> CV
+						</a>
+					</div>
 				</div>
-				<div class="clearfix"> </div>
+				<div class="clearfix"></div>
 			</div>
 		</div>
 	</div>
 	<!--//banner-->
 	<!--top-nav-->
-	<div class="top-nav wow">
+	<div class="top-nav">
 		<div class="container">
 			<div class="navbar-header logo">
 				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
 					Menu
 				</button>
 			</div>
-			<!-- Collect the nav links, forms, and other content for toggling -->
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<div class="menu">
 					<ul class="nav navbar">
 						<li><a href="#about" class="scroll">About</a></li>
-						<li><a href="#education" class="scroll">Education</a></li>
-						<li><a href="#experience" class="scroll">Experience</a></li>
+						<li><a href="#education" class="scroll">Education &amp; Experience</a></li>
+						<li><a href="#research" class="scroll">Research Interest</a></li>
 						<li><a href="#work" class="scroll">Publications</a></li>
-						<li><a href="#contact" class="scroll">Scholarships and Awards</a></li>
-						<li><a href="#pc" class="scroll">Program Committees</a></li>
+						<li><a href="#contact" class="scroll">Awards</a></li>
+						<li><a href="#pc" class="scroll">Service</a></li>
 					</ul>
-					<div class="clearfix"> </div>
+					<div class="clearfix"></div>
 				</div>
 			</div>
 		</div>
-	</div>	
+	</div>
 	<!--//top-nav-->
+
 	<!--about-->
-	<div id="about" class="about">
+	<div id="about" class="section about">
 		<div class="container">
-			<h3 class="title"> About Me</h3>
-			<div class="col-md-8 about-left">
-				<p>Hi, my name is Yin Lin (林茵 in Chinese). I am a senior algorithm engineer at Tongyi Lab, Alibaba Group, where I explore AI-driven solutions for enhancing data analytics and management. Before joining Alibaba, I earned my Ph.D. from the University of Michigan, Ann Arbor, where I had the privilege of being advised by <a href="https://web.eecs.umich.edu/~jag/">Dr. H. V. Jagadish</a>. I was also a member of the <a href="http://dbgroup.eecs.umich.edu/">Database Group</a>. My thesis research focused on data equity systems, aiming to prevent the misuse and misinterpretation of big data. </p><br><p>Before my Ph.D. studies at UM, I obtained my bachelor's degree from Shanghai Jiao Tong University in 2019.</p>
-<br>
-<HR>
-				
-<!-- <p>
-Outside of my research and work, I love playing the GO game, badminton and running. I completed the Yangzhou half-marathon in 2016. I also like to play <a href="https://www.youtube.com/watch?v=Gl55EB-5rzo">Zheng</a> (A traditional Chinese instrument) and guitar! 
-				You can know more about my personal interests in my <b><a href="https://photos.app.goo.gl/is7PyFsjDQgiaMhX7">photo site</a></b>.
-	</p> -->
-                   <!-- <p>I have many genius friends and <a href="javascript:randomSite()"><b>This Link</b></a > will redirect you to one of them.--> 
-                    </p>	
-	
-		
+			<h3 class="title">About Me</h3>
+			<div class="about-content">
+				<div class="about-left">
+					<p>Hi, my name is Yin Lin. I am a senior algorithm engineer at <b>Tongyi Lab, Alibaba Group</b>, where I explore AI-driven solutions for enhancing data analytics and management. My current research focuses on the intersection of AI agents and data management, developing systems that leverage intelligent agents to better process, analyze, and reason over data.</p>
+					<p>Before joining Alibaba, I earned my Ph.D. from the University of Michigan, Ann Arbor, where I was advised by <a href="https://web.eecs.umich.edu/~jag/">Dr. H. V. Jagadish</a>. My thesis research focused on data equity systems.
+					<p class="collab-note">If you are looking for a research intern position or interested in collaboration on AI agents, data management, or related areas, feel free to reach out!</p>
+				</div>
+				<div class="about-right">
+					<div class="news-box">
+						<h5>What's New</h5>
+						<ul>
+							<li><span class="news-tag">SIGMOD 2026</span> Our demo paper <em>AmbiSQL: Interactive Ambiguity Detection and Resolution for Text-to-SQL</em> is accepted!</li>
+							<li><span class="news-tag">New</span> Semantic operators integrated into <b><a href="https://github.com/modelscope/data-juicer">Data-Juicer</a></b> for large-scale training data processing.</li>
+							<li><span class="news-tag">New</span> <b><a href="https://github.com/agentscope-ai/DojoZero">DojoZero</a></b>: An agent arena for real-time data stream prediction in sports events. View AI agents compete in realtime at <a href="https://dojozero.live">dojozero.live</a>.</li>
+						</ul>
+					</div>
+				</div>
+				<div class="clearfix"></div>
 			</div>
-			<div class="col-md-4 about-right">
-				<ul>
-					<h5>What's new!</h5>
-					<li><span class="glyphicon glyphicon-menu-right"></span>Our demo paper: AmbiSQL: Interactive Ambiguity Detection and Resolution for Text-to-SQL is accepted to SIGMOD 2026!</li>
-				</ul>
-				<div class="clearfix"> </div>
-			</div>
-			<div class="clearfix"> </div>
 		</div>
 	</div>
 	<!--//about-->
-<!--Publication-->
-	<div id="work" class="education">
+
+	<!--education & experience-->
+	<div id="education" class="section education">
+		<div class="container">
+			<h3 class="title">Education &amp; Experience</h3>
+			<div id="experience" class="edu-exp-grid">
+				<div class="edu-exp-col">
+					<h4 class="subsection-title">Education</h4>
+					<div class="timeline">
+						<div class="timeline-item">
+							<div class="timeline-date">Sept. 2019 &ndash; Dec. 2024</div>
+							<h4>University of Michigan</h4>
+							<p>Ph.D., Computer Science and Engineering</p>
+						</div>
+						<div class="timeline-item">
+							<div class="timeline-date">Sept. 2015 &ndash; June 2019</div>
+							<h4>Shanghai Jiao Tong University</h4>
+							<p>B.S., Computer Science</p>
+						</div>
+					</div>
+				</div>
+				<div class="edu-exp-col">
+					<h4 class="subsection-title">Experience</h4>
+					<div class="timeline">
+						<div class="timeline-item">
+							<div class="timeline-date">May 2023 &ndash; Aug. 2023</div>
+							<h4>Alibaba Group</h4>
+							<p>Research Intern, Data Analytics and Intelligence Lab (DAIL), Damo Academy</p>
+						</div>
+						<div class="timeline-item">
+							<div class="timeline-date">June 2022 &ndash; Aug. 2022</div>
+							<h4>Microsoft Research</h4>
+							<p>Research Intern, Data Management, Exploration and Mining (DMX)</p>
+						</div>
+						<div class="timeline-item">
+							<div class="timeline-date">May 2018 &ndash; Jul. 2018</div>
+							<h4>University of Waterloo</h4>
+							<p>Summer Intern, Software Architecture Group</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--//education & experience-->
+
+	<!--research interest-->
+	<div id="research" class="section research">
+		<div class="container">
+			<h3 class="title">Research Interest</h3>
+			<p class="section-subtitle">I am currently exploring how AI agents can better manage, reason over, and interact with data. Here are some of my ongoing projects:</p>
+			<div class="research-grid">
+				<div class="research-card">
+					<div class="card-accent"></div>
+					<h4>Ambiguity Resolution in Analytical Queries</h4>
+					<span class="card-venue">SIGMOD 2026 Demo</span>
+					<p>Natural language queries to databases are often ambiguous. AmbiSQL is an interactive system that detects and resolves ambiguities in text-to-SQL translation, enabling users to clarify their intent and receive accurate query results.</p>
+				</div>
+				<div class="research-card">
+					<div class="card-accent"></div>
+					<h4>Semantic Operators for Data Processing</h4>
+					<p>Semantic operators bring AI-powered data transformations to large-scale data processing pipelines. These operators are now part of <b><a href="https://github.com/modelscope/data-juicer">Data-Juicer</a></b>, enabling intelligent filtering, enrichment, and transformation of training data for foundation models.</p>
+				</div>
+				<div class="research-card">
+					<div class="card-accent"></div>
+					<h4>DojoZero: Agent Arena</h4>
+					<span class="card-venue"><a href="https://github.com/agentscope-ai/DojoZero">GitHub Open-Source Project</a></span>
+					<p>DojoZero is an agent arena where AI agents react to real-time data streams to make predictions for sports events. It serves as a testbed for evaluating agents' capabilities in dynamic, time-sensitive decision-making scenarios.</p>
+				</div>
+				<div class="research-card">
+					<div class="card-accent"></div>
+					<h4>AI-Driven Data Analytics</h4>
+					<p>Exploring novel agent applications for data analytics, including using LLMs for <a href="https://arxiv.org/pdf/2309.07856.pdf">feature engineering</a> and <a href="http://sites.computer.org/debull/A25mar/p70.pdf">data engineering</a> tasks.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--//research interest-->
+
+	<!--Publications-->
+	<div id="work" class="section publications">
 		<div class="container">
 			<h3 class="title">Publications</h3>
-							<b><h3 style="color:#508a88">1. AmbiSQL: Interactive Ambiguity Detection and Resolution for Text-to-SQL <a href="https://arxiv.org/abs/2508.15276">(pdf) </a></h3></b>
-<br><h4 style="color:#508a88">Zhongjun Ding, <b>Yin Lin</b>*, Tianjing Zeng, Rong Zhu, Bolin Ding, Jingren Zhou</h4></h3></b>
-			<p><b>SIGMOD 2026 (Demo)</b></p>
-							<b><h3 style="color:#508a88">1. Large Language Models as Pretrained Data Engineers: Techniques and Opportunities <a href="http://sites.computer.org/debull/A25mar/p70.pdf">(pdf) </a></h3></b>
-<br><h4 style="color:#508a88"><b>Yin Lin</b>, Bolin Ding, Jingren Zhou</h4></h3></b>
-			<p><b>IEEE Data Engineering Bulletin 2025</b></p>
-							<b><h3 style="color:#508a88">2. Efficient Row-Level Lineage Leveraging Predicate Pushdown <a href="https://arxiv.org/pdf/2412.16864">(pdf) </a></h3></b>
-<br><h4 style="color:#508a88"><b>Yin Lin</b>, Cong Yan</h4></h3></b>
-			<p><b>CoRR, 2024, Arxiv/2412.16864</b></p>
-							<b><h3 style="color:#508a88">3. Mitigating Subgroup Unfairness in Machine Learning Classifiers: A Data-Driven Approach <a href="https://www.computer.org/csdl/proceedings-article/icde/2024/171500c151/1YOu4nlzmKI">(pdf)  </a></h3></b>
-<br><h4 style="color:#508a88"><b>Yin Lin</b>, Samika Gupta, H. V. Jagadish</h4></h3></b>
-			<p><b>ICDE 2024</b></p>
-							<b><h3 style="color:#508a88">4. SMARTFEAT: Efficient Feature Construction through Feature-Level Foundation Model Interactions <a href="https://arxiv.org/pdf/2309.07856.pdf">(pdf)</a></h3></b>
-<br><h4 style="color:#508a88"><b>Yin Lin</b>, Bolin Ding, H. V. Jagadish, Jingren Zhou</h4></h3></b>
-			<p><b>CIDR 2024</b></p>
-							<b><h3 style="color:#508a88">5. Predicate Pushdown for Data Science Pipelines. <a href="https://dl.acm.org/doi/10.1145/3589281">(pdf)</a></h3></b>
-<br><h4 style="color:#508a88"> Cong Yan, <b>Yin Lin</b>, Yeye He. </h4></h3></b>
-			<a href="https://2023.sigmod.org/"><p><b>SIGMOD 2023 (best paper award)</b></p></a>			
-									<b><h3 style="color:#508a88">6. Representation Bias in Data: A Survey on Identification and Resolution Techniques. <a href="https://dl.acm.org/doi/10.1145/3588433">(pdf)</a></h3></b>
-<br><h4 style="color:#508a88"> Nima Shahbazi, <b>Yin Lin</b>, Abolfazl Asudeh, H. V. Jagadish. </h4></h3></b>
-			<a href="https://dl.acm.org/journal/csur"><p><b>ACM Computing Surveys</b></p></a>
-						<b><h3 style="color:#508a88">7. OREO: Detection of Cherry-picked Generalizations. <a href="https://www.vldb.org/pvldb/vol15/p3570-lin.pdf">(pdf)</a></h3></b>
-<br><h4 style="color:#508a88"><b>Yin Lin</b>, Brit Youngmann, Yuval Moskovitch, H. V. Jagadish, Tova Milo</h4></h3></b>
-<a href="https://vldb2022.org/"><p><b>VLDB 2022 - Demo</b></p></a>
-						<b><h3 style="color:#508a88">8. On Detecting Cherry-picked Generalizations. <a href="https://www.vldb.org/pvldb/vol15/p59-lin.pdf">(pdf)</a></h3></b>
-<br><h4 style="color:#508a88"><b>Yin Lin</b>, Brit Youngmann, Yuval Moskovitch, H. V. Jagadish, Tova Milo</h4></h3></b>
-			<a href="https://vldb2022.org/"><p><b>VLDB 2022</b></p></a>
-						<b><h3 style="color:#508a88">9. Identifying Insufficient Data Coverage in Databases with Multiple Relations. <a href="http://www.vldb.org/pvldb/vol13/p2229-lin.pdf">(pdf)</a></h3></b>
-<br><h4 style="color:#508a88"><b>Yin Lin</b>, Yifan Guan, Abolfazl Asudeh, H. V. Jagadish</h4></h3></b>
-			<a href="https://vldb2020.org/"><p><b>VLDB 2020</b></p></a>
-							<b><h3 style="color:#508a88">10. MithraDetective: A System for Cherry-picked Trendlines Detection. <a https://arxiv.org/abs/2010.08807">(pdf)</a></h3></b>
-<br><h4 style="color:#508a88">Yoko Nagafuchi, <b>Yin Lin</b>, Kaushal Mamgain, Abolfazl Asudeh, H. V. Jagadish, You (Will) Wu, Cong Yu</h4></h3></b>
-			<p><b>CoRR, 2020, Arxiv/2010.08807</b></p>
-									<b><h3 style="color:#508a88">11. On Structural vs. Proximity-based Temporal Node Embeddings. <a href="http://www.mlgworkshop.org/2020/papers/MLG2020_paper_37.pdf">(pdf)</a></h3></b>
-<br><h4 style="color:#508a88">Puja Trivedi, Alican Büyükçakır, <b>Yin Lin</b>, Yinlong Qian, Di Jin, Danai Koutra</h4></h3></b>
-<a href="http://www.mlgworkshop.org/2020/"><p><b>MLG@KDD 2020</b></p></a>
-			
-			<b><h3 style="color:#508a88">12. R2-Tree: An Efficient Indexing Scheme for Server-Centric Data Center Networks. <a href="images/R2-Tree_YinLin,XinyinChen.pdf">(pdf)</a></h3></b>
-<br><h4 style="color:#508a88"><b>Yin Lin</b>, Xinyi Chen, Xiaofeng , Guihai Chen</h4>
-<a href="http://www.dexa.org/"><p><b>DEXA 2018</b></p></a>
-<br>
-
-	
+			<div class="pub-list">
+				<div class="pub-item">
+					<div class="pub-number">1</div>
+					<div class="pub-content">
+						<h4>AmbiSQL: Interactive Ambiguity Detection and Resolution for Text-to-SQL <a href="https://arxiv.org/abs/2508.15276" class="pub-pdf">[pdf]</a></h4>
+						<p class="pub-authors">Zhongjun Ding, <b>Yin Lin</b>*, Tianjing Zeng, Rong Zhu, Bolin Ding, Jingren Zhou <span class="corresponding-note">(* corresponding author)</span></p>
+						<p class="pub-venue">SIGMOD 2026 (Demo)</p>
+					</div>
+				</div>
+				<div class="pub-item">
+					<div class="pub-number">2</div>
+					<div class="pub-content">
+						<h4>Large Language Models as Pretrained Data Engineers: Techniques and Opportunities <a href="http://sites.computer.org/debull/A25mar/p70.pdf" class="pub-pdf">[pdf]</a></h4>
+						<p class="pub-authors"><b>Yin Lin</b>, Bolin Ding, Jingren Zhou</p>
+						<p class="pub-venue">IEEE Data Engineering Bulletin 2025</p>
+					</div>
+				</div>
+				<div class="pub-item">
+					<div class="pub-number">3</div>
+					<div class="pub-content">
+						<h4>Efficient Row-Level Lineage Leveraging Predicate Pushdown <a href="https://arxiv.org/pdf/2412.16864" class="pub-pdf">[pdf]</a></h4>
+						<p class="pub-authors"><b>Yin Lin</b>, Cong Yan</p>
+						<p class="pub-venue">CoRR, 2024, Arxiv/2412.16864</p>
+					</div>
+				</div>
+				<div class="pub-item">
+					<div class="pub-number">4</div>
+					<div class="pub-content">
+						<h4>Mitigating Subgroup Unfairness in Machine Learning Classifiers: A Data-Driven Approach <a href="https://www.computer.org/csdl/proceedings-article/icde/2024/171500c151/1YOu4nlzmKI" class="pub-pdf">[pdf]</a></h4>
+						<p class="pub-authors"><b>Yin Lin</b>, Samika Gupta, H. V. Jagadish</p>
+						<p class="pub-venue">ICDE 2024</p>
+					</div>
+				</div>
+				<div class="pub-item">
+					<div class="pub-number">5</div>
+					<div class="pub-content">
+						<h4>SMARTFEAT: Efficient Feature Construction through Feature-Level Foundation Model Interactions <a href="https://arxiv.org/pdf/2309.07856.pdf" class="pub-pdf">[pdf]</a></h4>
+						<p class="pub-authors"><b>Yin Lin</b>, Bolin Ding, H. V. Jagadish, Jingren Zhou</p>
+						<p class="pub-venue">CIDR 2024</p>
+					</div>
+				</div>
+				<div class="pub-item">
+					<div class="pub-number">6</div>
+					<div class="pub-content">
+						<h4>Predicate Pushdown for Data Science Pipelines <a href="https://dl.acm.org/doi/10.1145/3589281" class="pub-pdf">[pdf]</a></h4>
+						<p class="pub-authors">Cong Yan, <b>Yin Lin</b>, Yeye He</p>
+						<p class="pub-venue award">SIGMOD 2023 (Best Paper Award)</p>
+					</div>
+				</div>
+				<div class="pub-item">
+					<div class="pub-number">7</div>
+					<div class="pub-content">
+						<h4>Representation Bias in Data: A Survey on Identification and Resolution Techniques <a href="https://dl.acm.org/doi/10.1145/3588433" class="pub-pdf">[pdf]</a></h4>
+						<p class="pub-authors">Nima Shahbazi, <b>Yin Lin</b>, Abolfazl Asudeh, H. V. Jagadish</p>
+						<p class="pub-venue">ACM Computing Surveys</p>
+						<span class="pub-highlight">Highly cited survey in the field of AI fairness</span>
+					</div>
+				</div>
+				<div class="pub-item">
+					<div class="pub-number">8</div>
+					<div class="pub-content">
+						<h4>OREO: Detection of Cherry-picked Generalizations <a href="https://www.vldb.org/pvldb/vol15/p3570-lin.pdf" class="pub-pdf">[pdf]</a></h4>
+						<p class="pub-authors"><b>Yin Lin</b>, Brit Youngmann, Yuval Moskovitch, H. V. Jagadish, Tova Milo</p>
+						<p class="pub-venue">VLDB 2022 (Demo)</p>
+					</div>
+				</div>
+				<div class="pub-item">
+					<div class="pub-number">9</div>
+					<div class="pub-content">
+						<h4>On Detecting Cherry-picked Generalizations <a href="https://www.vldb.org/pvldb/vol15/p59-lin.pdf" class="pub-pdf">[pdf]</a></h4>
+						<p class="pub-authors"><b>Yin Lin</b>, Brit Youngmann, Yuval Moskovitch, H. V. Jagadish, Tova Milo</p>
+						<p class="pub-venue">VLDB 2022</p>
+					</div>
+				</div>
+				<div class="pub-item">
+					<div class="pub-number">10</div>
+					<div class="pub-content">
+						<h4>Identifying Insufficient Data Coverage in Databases with Multiple Relations <a href="http://www.vldb.org/pvldb/vol13/p2229-lin.pdf" class="pub-pdf">[pdf]</a></h4>
+						<p class="pub-authors"><b>Yin Lin</b>, Yifan Guan, Abolfazl Asudeh, H. V. Jagadish</p>
+						<p class="pub-venue">VLDB 2020</p>
+					</div>
+				</div>
+				<div class="pub-item">
+					<div class="pub-number">11</div>
+					<div class="pub-content">
+						<h4>MithraDetective: A System for Cherry-picked Trendlines Detection <a href="https://arxiv.org/abs/2010.08807" class="pub-pdf">[pdf]</a></h4>
+						<p class="pub-authors">Yoko Nagafuchi, <b>Yin Lin</b>, Kaushal Mamgain, Abolfazl Asudeh, H. V. Jagadish, You (Will) Wu, Cong Yu</p>
+						<p class="pub-venue">CoRR, 2020, Arxiv/2010.08807</p>
+					</div>
+				</div>
+				<div class="pub-item">
+					<div class="pub-number">12</div>
+					<div class="pub-content">
+						<h4>On Structural vs. Proximity-based Temporal Node Embeddings <a href="http://www.mlgworkshop.org/2020/papers/MLG2020_paper_37.pdf" class="pub-pdf">[pdf]</a></h4>
+						<p class="pub-authors">Puja Trivedi, Alican B&uuml;y&uuml;k&ccedil;ak&#305;r, <b>Yin Lin</b>, Yinlong Qian, Di Jin, Danai Koutra</p>
+						<p class="pub-venue">MLG@KDD 2020</p>
+					</div>
+				</div>
+				<div class="pub-item">
+					<div class="pub-number">13</div>
+					<div class="pub-content">
+						<h4>R2-Tree: An Efficient Indexing Scheme for Server-Centric Data Center Networks <a href="images/R2-Tree_YinLin,XinyinChen.pdf" class="pub-pdf">[pdf]</a></h4>
+						<p class="pub-authors"><b>Yin Lin</b>, Xinyi Chen, Xiaofeng, Guihai Chen</p>
+						<p class="pub-venue">DEXA 2018</p>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
-	<!--//publication-->	
-	<!--education-->
-	<div id="education" class="education">
-		<div class="container">
-			<h3 class="title">Education</h3>
-			
-			<h4 style="color:#4682B4">Ph.D. student: Sept. 2019 - Dec. 2024</h4>
-					<h4><b>University of Michigan</b></h4>
-					<p>Computer Science and Engineering (CSE)</p>
-			<HR>
-					<h4 style="color:#4682B4">Bachelor: Sept. 2015 - June 2019</h4>
-					<h4><b>Shanghai Jiao Tong University</b></h4>
-					<p>Computer Science, School of Electronic Information and Electrical Engineering ( CS )</br> </p>
-			
+	<!--//Publications-->
 
-		</div>
-	</div>
-	<!--//education-->
-	<!--education-->
-	<div id="experience" class="education">
-		<div class="container">
-			<h3 class="title">Experience</h3>
-			
-			<h4 style="color:#4682B4">Reseach Intern: May 2023 - Aug. 2023</h4>
-					<h4><b>Alibaba Group, Data Analytics and Intelligence Lab (DAIL), Damo Academy</b></h4>
-			<HR>
-			<h4 style="color:#4682B4">Reseach Intern: June 2022 - Aug. 2022</h4>
-					<h4><b>Microsoft Research, Data Management, Exploration and Mining (DMX) </b></h4>
-			<HR>
-			<h4 style="color:#4682B4">Summer Intern: May 2018 - Jul. 2018</h4>
-					<h4><b>University of Waterloo, Software Architecture Group </b></h4>
-
-		</div>
-	</div>
-	<!--//experience>
-	<!--contact -->
-	<div class="education" id="contact">
+	<!--awards-->
+	<div class="section" id="contact">
 		<div class="container">
 			<h3 class="title">Scholarships and Awards</h3>
-			<p>Best Paper Award at SIGMOD 2023</p>
-			<p>NSF Travel Award for ICDE 2024</p>
-			<p>Rackham Dean’s and Named PhD fellowship</p>
-			<p>Outstanding Undergraduate in Shanghai Jiao Tong University</p>
-			<p>Chun Tsung Scholar from Shanghai Jiao Tong University</p>
+			<div class="awards-list">
+				<div class="award-item">Best Paper Award at SIGMOD 2023</div>
+				<div class="award-item">NSF Travel Award for ICDE 2024</div>
+				<div class="award-item">Rackham Dean's and Named PhD Fellowship, University of Michigan</div>
+				<div class="award-item">Outstanding Undergraduate, Shanghai Jiao Tong University</div>
+				<div class="award-item">Chun Tsung Scholar, Shanghai Jiao Tong University</div>
+			</div>
 		</div>
 	</div>
-	<!--//contact -->
-	<!--pc -->
-	<div class="education" id="pc">
+	<!--//awards-->
+
+	<!--pc-->
+	<div class="section" id="pc">
 		<div class="container">
-			<h3 class="title">Program Committees</h3>
-			<p>AAAI Workshop on Artificial Intelligence with Biased or Scarce Data (AIBSD), 2024</p>
-			<p>32nd ACM International Conference on Information and Knowledge Management (CIKM), 2023, 2024</p>
+			<h3 class="title">Professional Service</h3>
+			<div class="service-list">
+				<p><b>Program Committees / Reviewers:</b> NeurIPS, TKDE, CIKM, IEEE BigData, AIBSD (AAAI Workshop on AI with Biased or Scarce Data), ReLM (AAAI Workshop on Responsible Language Models)</p>
+			</div>
 		</div>
 	</div>
-	<!--//pc -->
-	
-    <!--================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/bootstrap.js"></script>
-<script src="js/friends_link.js"></script>
-<HR>
-<div class="divcss5-left">	
-<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5has6kwkmu3&amp;m=7&amp;c=e63100&amp;cr1=ffffff&amp;f=arial&amp;l=0&amp;bv=90&amp;lx=-420&amp;ly=420&amp;hi=20&amp;he=7&amp;hc=a8ddff&amp;rs=80" async="async"></script>
-</div>
-	</body>
+	<!--//pc-->
+
+	<!--footer-->
+	<div class="footer">
+		<div class="container">
+			<div class="footer-inner">
+				<div class="footer-map">
+					<script type="text/javascript" src="//rf.revolvermaps.com/0/0/6.js?i=5has6kwkmu3&amp;m=7&amp;c=e63100&amp;cr1=ffffff&amp;f=arial&amp;l=0&amp;bv=90&amp;lx=-420&amp;ly=420&amp;hi=20&amp;he=7&amp;hc=a8ddff&amp;rs=80" async="async"></script>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--//footer-->
+
+	<script src="js/bootstrap.js"></script>
+	<script src="js/friends_link.js"></script>
+</body>
 </html>
