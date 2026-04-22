@@ -32,6 +32,9 @@
 	.post-body hr { border: none; border-top: 1px solid #ddd; margin: 2.2em 0; }
 	.post-body .refs { font-size: 0.95em; }
 	.post-body .refs li { margin-bottom: 0.7em; }
+	.video-embed { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin: 1.4em 0 0.5em; border-radius: 4px; background: #000; }
+	.video-embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+	.video-caption { text-align: center; font-size: 0.9em; color: #666; margin: 0 0 1.5em; font-style: italic; }
 </style>
 </head>
 <body>
@@ -88,6 +91,11 @@
 
 				<p>通过将定时任务指向你的 RSS 源或收藏链接，知识库会在你睡觉时自动增长。助手负责阅读、总结和归档；你只需出现并问有什么新的。这正是个人助手的用武之地——持续的、后台运行的工作，聊天界面根本做不到。</p>
 
+				<div class="video-embed">
+					<iframe src="https://www.youtube.com/embed/JxaHM2HpDZo" title="Copilot Digest 演示视频" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+				</div>
+				<p class="video-caption">演示视频。</p>
+
 				<h2>接入方式：MCP 连接器模式</h2>
 
 				<p>下一个问题是：你日常到底怎么用这个东西？Copilot Digest 最初运行在 QwenPaw 自己的网页控制台里。能用，但意味着又多了一个需要保持打开的界面——而且仍然需要屏幕。我真正想要的是彻底的解放双手。在碎片时间——走路、通勤、做家务——你没法坐在屏幕前，甚至在手机上打字都不太方便。但你可以说话。如果助手能大声跟你讨论阅读列表，并通过语音帮你记笔记，那些闲置时间就变成了生产力。</p>
@@ -121,6 +129,8 @@
 				<p><strong>用户留在他们已有的工具里。</strong> 任何兼容 MCP 的宿主——聊天客户端、IDE、移动应用、网站——都可以立即连接到助手。用户不需要学习新界面或切换上下文。他们直接在手头已经打开的工具里与助手交互，保留该工具本身的历史和连续性。</p>
 
 				<p><strong>超越 channel 的扩展性。</strong> QwenPaw 的 channel 体系——钉钉、Discord、Telegram 等——功能强大，但每个集成都有自己的认证流程、消息格式和平台特有的坑。MCP 反转了这个模式：只需暴露一组工具，任何兼容的宿主都可以接入——无论是聊天客户端、移动应用，还是想直接嵌入你助手能力的网站。集成的负担从你转移到了宿主平台。更重要的是，MCP 允许你有选择性地暴露能力：启动一个范围严格受限的连接器，只暴露阅读列表和简报——没有 shell 访问、没有文件写入——然后把 URL 分享给任何人。一个助手，多个连接器，每个针对不同受众裁剪。Channel 对所有人广播同样的内容；MCP 连接器可以是精准的。</p>
+
+				<p><strong>服务商交付的可以是真正的助手，而不是聊天机器人。</strong> 因为接入如此轻量，在线服务商可以把真正的助手托管在自己的后端——使用自己的数据、自己的领域逻辑、以及 MCP 层面的工具安全控制——并将其暴露为一个连接器，让用户在任何已有的宿主中使用它，甚至可以作为嵌入式组件放在服务商自己的网页里。想象一个像 Redfin 这样的公司：今天它们在搜索页面上挂一个聊天机器人，而通过 MCP，它们可以暴露一个真正的助手，帮用户跨房源、成交对比、价格历史和看房预约来规划购房——在 Claude、IDE 里都能用，也能直接嵌在站点内部使用。重活留在服务端，只暴露经过选择的工具。这比为每个入口分别去做 channel 集成——或者再造一个聊天机器人——灵活得多。</p>
 
 				<h3>局限性</h3>
 

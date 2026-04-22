@@ -32,6 +32,9 @@
 	.post-body hr { border: none; border-top: 1px solid #ddd; margin: 2.2em 0; }
 	.post-body .refs { font-size: 0.95em; }
 	.post-body .refs li { margin-bottom: 0.7em; }
+	.video-embed { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin: 1.4em 0 0.5em; border-radius: 4px; background: #000; }
+	.video-embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+	.video-caption { text-align: center; font-size: 0.9em; color: #666; margin: 0 0 1.5em; font-style: italic; }
 </style>
 </head>
 <body>
@@ -88,6 +91,11 @@
 
 				<p>With a cron job pointed at your RSS feeds or saved links, the knowledge base grows while you sleep. The agent does the reading, summarizing, and filing; you show up and ask what is new. This is the kind of task personal agents are built for — persistent, background work that a chat interface simply cannot do.</p>
 
+				<div class="video-embed">
+					<iframe src="https://www.youtube.com/embed/JxaHM2HpDZo" title="Copilot Digest demo video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+				</div>
+				<p class="video-caption">The demo video.</p>
+
 				<h2>Shipping it: the MCP connector pattern</h2>
 
 				<p>The next question is: how do you actually use the thing day to day? Originally Copilot Digest lived inside QwenPaw's own web console. It worked, but it meant yet another interface to keep open — and it still required a screen. What I really wanted was true hands-free operation. During dead time — walking, commuting, doing chores — you cannot sit in front of a screen or even comfortably type on a phone. But you can talk. If the assistant could discuss your reading list out loud and help you take notes by voice, those dead hours become productive.</p>
@@ -121,6 +129,8 @@
 				<p><strong>Users stay where they already are.</strong> Any MCP-compatible host — a chat client, an IDE, a mobile app, a website — can connect to the assistant immediately. Users do not need to learn a new interface or switch contexts. They interact with the assistant from whatever tool they already have open, with all the history and continuity that tool already provides.</p>
 
 				<p><strong>It scales beyond channels.</strong> QwenPaw's channel system — DingTalk, Discord, Telegram, etc. — is powerful, but each integration carries its own authentication flow, message format, and platform-specific quirks. MCP flips this: expose a set of tools once, and any compatible host can consume them — whether that's a chat client, a mobile app, or a website that wants to embed your assistant's capabilities directly. The integration burden shifts from you to the host. More importantly, MCP lets you selectively expose capabilities: spin up a narrowly scoped connector that surfaces only your reading list and briefings — no shell access, no file writes — and hand that URL to anyone. One assistant, multiple connectors, each tailored to its audience. Channels broadcast to everyone the same way; MCP connectors can be surgical.</p>
+
+				<p><strong>Providers can ship a real assistant, not a chatbot.</strong> Because the integration is so lightweight, online services can host a real agent in their backend — with their data, their domain logic, and MCP-level tool safety controls — and expose it as a connector their users plug into whatever host they already use, including an embedded widget on the service's own page. Think of a company like Redfin: today they ship a chatbot bolted onto a search page, but with MCP they could instead expose a proper assistant that plans a house hunt across listings, comps, price history, and tour scheduling — consumable from Claude, an IDE, or right inside the site itself. The heavy work stays server-side; only the chosen tools are exposed.</p>
 
 				<h3>Limitations</h3>
 
