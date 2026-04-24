@@ -97,9 +97,9 @@
 
 				<p>With a cron job pointed at your RSS feeds or saved links, the knowledge base grows while you sleep. The agent does the reading, summarizing, and filing; you show up and ask what is new. This is the kind of task personal agents are built for — persistent, background work that a chatbot simply cannot do.</p>
 
-				<p>The first thing I wanted from Copilot Digest was to use it during the times I am <em>not</em> at a screen — commutes, walks, chores. That means voice, which means ASR (automatic speech recognition) and TTS (text-to-speech). The chat interfaces these projects ship with, including QwenPaw's own web console, support neither. Building voice from scratch would be its own project.</p>
+				<p>The first thing I wanted from Copilot Digest was to use it during the times I am <em>not</em> at a screen — commutes, walks, chores. Voice input alone does not cut it for that; I want a full hands-free, eyes-free <em>conversation</em> — speak, listen to the reply, keep going, all without touching the phone. That is exactly what Claude.ai's voice mode already does, and does well. Building a comparable voice-conversation layer on top of these agent projects (whose chat interfaces handle voice input at best, not a two-way spoken conversation) would be a project in itself.</p>
 
-				<p>Instead of building it, I borrowed it. Claude.ai already has voice on mobile, so if I could let Claude call my Copilot Digest agent, I would get voice for free. The path to that is MCP: I expose Copilot Digest as an MCP server and register it in Claude.ai as a custom connector. An LLM application becomes the voice-capable front-end for my local agent — the agent itself does not have to change. Same core, a different consumer, and voice on mobile suddenly works.</p>
+				<p>I did not have to. If I could get Claude.ai to drive my Copilot Digest agent, the whole voice-mode experience would come along with it. MCP is the bridge: I expose Copilot Digest as an MCP server and register it in Claude.ai as a custom connector, and an LLM host application becomes the voice-mode front-end for my local agent. The agent itself does not have to change. Same core, a different consumer, and voice conversation suddenly works.</p>
 
 				<h2>Open discussions</h2>
 
