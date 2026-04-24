@@ -4,7 +4,7 @@
 <title>聊天框之外：个人 AI 助手到底是什么 - Yin Lin</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="description" content="QwenPaw、OpenClaw、Hermes 等个人 AI 助手与聊天机器人的区别，以及为什么 MCP 连接器模式是当下将 AI 助手交付给终端用户的好方案。">
+<meta name="description" content="个人 AI 助手到底是什么——一旦你不再默认它的唯一消费者是人类，它其实是一个拥有可插拔接口、面向人类、其他 agent 和应用的 agent 系统。以及我们应该怎么构建它，Copilot Digest 与 MCP 作为具体示例。">
 <link href="../css/bootstrap.css" type="text/css" rel="stylesheet" media="all">
 <link href="../css/style.css" type="text/css" rel="stylesheet" media="all">
 <link href='//fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:wght@400;600;700&display=swap' rel='stylesheet'>
@@ -53,17 +53,17 @@
 			<div class="post-body">
 				<p>大多数人对 AI 助手的体验就是浏览器里的一个聊天框。输入问题，阅读回答，关闭标签页。好用是好用，但这样用其实是把它当搜索引擎在使——而不是当助手。真正的助手应该知道你关心什么，替你做事，偶尔还能告诉你一些你没想到要问的事情。</p>
 
-				<p>一批开源项目正在试图构建这样的东西——OpenClaw (<a href="https://docs.openclaw.ai/">docs.openclaw.ai</a>)、QwenPaw (<a href="https://github.com/QwenPaw/QwenPaw">github</a>)、Hermes Agent (<a href="https://hermes-agent.nousresearch.com/">hermes-agent.nousresearch.com</a>) 等等。我最近将 QwenPaw 的一个助手封装成了 MCP Server，使其可以直接接入 Claude.ai 及其他兼容 MCP 的平台。这篇文章是对这个设计空间的梳理：这些个人助手与聊天机器人有什么不同，目前的粗糙之处在哪里，以及为什么我认为 MCP 连接器模式是当下将 AI 助手交付给终端用户的一个出人意料的好方案。</p>
+				<p>一批开源项目正在试图构建这样的东西——OpenClaw (<a href="https://docs.openclaw.ai/">docs.openclaw.ai</a>)、QwenPaw (<a href="https://github.com/agentscope-ai/QwenPaw">github</a>)、Hermes Agent (<a href="https://hermes-agent.nousresearch.com/">hermes-agent.nousresearch.com</a>) 等等。这篇文章想讨论两个问题：<em>个人助手到底是什么？我们应该怎么构建它？</em>我的观点是，"一个能帮你操作 PC 的聊天机器人"这种常见框架太窄了。个人助手更应该被理解成一个 agent 系统：它既可以直接和<strong>人</strong>交互（直接在控制台里使用它，或通过 Slack 等消息渠道跟它对话）、也可以被另一个 <strong>agent</strong> 调用（一个研究 agent 让它给十篇新论文排序；一个项目管理 agent 让它起草一封给客户的邮件）、或被一个<strong>应用</strong>集成（IDE 把它嵌进来做代码推理；CRM 调用它生成客户沟通文案；像 Redfin 这样的站点支持它，让 agent 替用户去与房源、成交对比、看房预约交互），还可以自己按计划在后台跑定时任务，主动把结果推给你（或推给上面任何一方），而不是等着被问。这些情况下核心都是同一个——变的只是接口。我也会介绍我基于 QwenPaw 搭的一个小 demo——Copilot Digest。</p>
 
-				<h2>个人助手 vs. 聊天界面</h2>
+				<h2>个人助手 vs. 聊天机器人</h2>
 
-				<p>我说"个人助手"，是指：一个持续运行在你的机器（或你控制的服务器）上的程序，能访问本地文件和工具，连接你日常使用的消息渠道，并且可以在你不在场的情况下执行操作。上述三个项目都能接入你已经在用的消息平台——Slack、Discord、Telegram、WhatsApp、iMessage、邮件等等 (OpenClaw, 2025; QwenPaw, 2025; Nous Research, 2025)。你像给朋友发消息一样跟助手对话——不需要切换浏览器标签页，没有上下文中断。</p>
+				<p>我说"个人助手"，是指：一个持续运行在你的机器（或你控制的服务器）上的程序，能访问本地文件和工具，连接你日常使用的消息渠道，并且可以在你不在场的情况下执行操作。上述三个项目都能接入你已经在用的消息平台——Slack、Discord、Telegram、WhatsApp、iMessage、邮件等等 (OpenClaw, 2025; QwenPaw, 2025; Nous Research, 2025)。它们也越来越多地支持标准工具协议——MCP 面向 Claude.ai、IDE 这类 LLM 宿主应用，ACP 面向其他 agent——让非人类的调用方无需定制集成就能接进来。</p>
 
-				<p>仅此一点就是不错的体验提升，但更有意思的部分是你<em>没有</em>在跟它对话的时候发生的事情。</p>
+				<p>仅此一点就是不错的体验提升，但另一个有意思的部分是你<em>没有</em>在跟它对话的时候发生的事情。</p>
 
 				<h3>心跳与定时任务</h3>
 
-				<p>这些项目通常都提供某种形式的定时主动行为。QwenPaw 称之为<strong>心跳（heartbeat）</strong>：你在一个 markdown 文件中写下问题，设置间隔——比如早 8 点到晚 10 点之间每两小时一次——助手会按计划回答这些问题，并将回复推送到你最近聊天的渠道。Hermes Agent 则允许你用自然语言定义定期任务 (Nous Research, 2025)。你一觉醒来看到一条消息："昨晚有三篇关于检索增强生成的新预印本发布，以下是排序摘要。"你没有问过，它只是知道该去查。</p>
+				<p>这些项目通常都提供某种形式的定时主动行为。它们称之为<strong>心跳（heartbeat）</strong>：你在一个 markdown 文件中写下问题，设置间隔——比如早 8 点到晚 10 点之间每两小时一次——助手会按计划回答这些问题，并将回复推送到你最近聊天的渠道。你一觉醒来看到一条消息："昨晚有三篇关于检索增强生成的新预印本发布，以下是排序摘要。"你没有问过，它只是知道该去查。</p>
 
 				<p>独立的定时任务系统允许你调度各自独立的工作，每个有自己的时间和推送目标。早上 8 点的摘要推送、周五的合规检查、站会前的 PR 评审提醒。这些功能共同将助手从你去"拉取"的工具，变成了主动"推送"给你的存在。</p>
 
@@ -73,98 +73,48 @@
 
 				<h3>Token 消耗</h3>
 
-				<p>每一次心跳触发都是一次完整的 LLM 推理调用。每一个定时任务都是一轮对话。一个每 30 分钟触发一次、覆盖 14 小时活跃窗口的心跳，每天就是 28 次调用——而你还没有亲自问过一个问题。如果你使用的是云端模型（大多数人都是，因为本地模型在复杂的 agentic 任务上仍然力不从心），成本积累得很快。根据模型和上下文长度的不同，单个常驻助手仅定时活动的 API 费用就能轻松达到每月数十美元。</p>
+				<p>每一次心跳触发都是一次完整的 LLM 推理调用。每一个定时任务都是一轮对话。一个每 30 分钟触发一次、覆盖 14 小时活跃窗口的心跳，每天上限约 28 次调用——而你还没有亲自问过一个问题。如果你使用的是云端模型（大多数人都是，因为在长链路 agentic 任务上，云端模型仍然比消费级硬件上能跑的本地模型更稳定可靠），成本积累得很快。根据模型和上下文长度的不同，单个常驻助手仅定时活动的 API 费用就能轻松达到每月数十美元。</p>
 
 				<p>你可以通过缩短上下文、使用更便宜的模型或拉长间隔来缓解，但有一个根本性的矛盾：你希望助手越主动、越有上下文感知能力，它消耗的 token 就越多。天下没有免费的午餐。</p>
 
 				<h3>安全</h3>
 
-				<p>这些助手拥有真实的工具——文件读写、shell 执行、网页浏览。各个项目采取了不同的防护策略：QwenPaw 叠加了基于模式匹配的工具守卫、文件路径限制和插件扫描器 (QwenPaw 安全文档)；OpenClaw 使用 DM 配对、白名单和可选的 Docker 沙箱 (OpenClaw 安全文档)；Hermes Agent 提供多种执行后端（本地、Docker、SSH、Singularity、Modal），支持容器加固和隔离子助手 (Nous Research, 2025)。</p>
+				<p>这些助手拥有真实的工具——文件读写、shell 执行、网页浏览。各个项目采取了不同的防护策略：QwenPaw 叠加了基于模式匹配的工具守卫、文件路径限制和技能（skill）安全扫描 (QwenPaw 安全文档)；OpenClaw 使用 DM 配对、白名单和可选的 Docker 沙箱 (OpenClaw 安全文档)；Hermes Agent 提供六种执行后端（local、Docker、SSH、Daytona、Singularity、Modal），支持容器加固和隔离子助手 (Nous Research, 2025)。</p>
 
-				<p>这些都是有意义的防护措施，但并非无懈可击。模式匹配检测有盲区。提示注入——通过恶意输入诱使助手执行非预期操作——仍是一个开放性问题 (Greshake et al., 2023)。在生产环境中运行这些助手意味着要接受一定的运维开销：监控日志、审查工具调用、保持规则更新。对于喜欢折腾的开发者或研究者来说，这没问题。但对于普通用户来说，门槛不低。</p>
+				<p>这些都是有意义的防护措施，但并非无懈可击。模式匹配检测有盲区。提示注入——通过恶意输入诱使助手执行非预期操作——仍是一个开放性问题 (Greshake et al., 2023)。在生产环境中运行这些助手意味着要接受一定的运维开销：监控日志、审查工具调用、保持规则更新。</p>
 
-				<h2>我最近在做的一个 Demo：Copilot Digest</h2>
+				<h2>我们在往哪里走</h2>
 
-				<p>成本和安全问题是真实存在的，但它们不应掩盖这些助手真正有用的地方：它们可以代你管理一个工作空间，并通过定时任务持续充实它——这种工作会随时间复利增长，而不需要你的关注。</p>
+				<p>整个生态在从两个方向扩展同一个核心——一条来自用户，一条来自项目本身。</p>
 
-				<p>为了将这一点付诸实践，我基于 QwenPaw 构建了一个名为 <strong>Copilot Digest</strong> (<a href="https://github.com/niceIrene/QwenPaw/tree/yin/copilot-digest">源码</a>) 的助手——可以把它想象成一个个性化的知识播客，帮你消化重要内容，在通勤、散步或做家务等碎片时间保持信息更新。它会摄取你没时间读的论文、文章、博客和新闻，然后将它们整理、排序、总结到一个本地知识库中。你可以浏览阅读列表、获取排序简报（"这周有什么值得关注的？"）、阅读完整文章摘要、深入讨论某篇论文、记录笔记和待办事项，以及导出编译报告。所有内容都以文件形式存储在你的机器上——一个包含索引、文章摘要、工作产出和导出的工作空间目录。</p>
+				<p>在用户这一侧，主要的扩展机制是<strong>技能（skills）</strong>：领域特定的能力包（一个研究技能、一个代码评审技能、一个客户沟通技能），可以插进 agent 运行时，教它新的本领。因为技能生活在运行时之上，助手可以在边缘变得更聪明，而底层项目不必为此发新版本——任何人都可以通过写或装一个技能来扩展自己的助手。</p>
 
-				<p>通过将定时任务指向你的 RSS 源或收藏链接，知识库会在你睡觉时自动增长。助手负责阅读、总结和归档；你只需出现并问有什么新的。这正是个人助手的用武之地——持续的、后台运行的工作，聊天界面根本做不到。</p>
+				<p>在项目本身这一侧，工作沿两条互补的轴线推进。第一条是<strong>接口支持</strong>：面向人的消息渠道越来越多，同时 MCP 和 ACP 在整个生态中陆续落地，让 agent 和 LLM 宿主类应用都能无需定制集成就接进来。第二条是<strong>更强的 agent harness</strong>：运行时本身在变得更强。以 Hermes Agent 为例，它是<strong>自我改进（self-improving）</strong>的——它会把完成过的复杂任务蒸馏成可复用的技能、在使用中迭代这些技能，并周期性地把学到的东西持久化到 <code>MEMORY.md</code> 里 (Nous Research, 2025)。更好的工具调用循环、更好的记忆、更好的安全护栏——天花板在上移的同时，地板也在抬升。</p>
 
-				<div class="video-embed">
-					<iframe src="https://www.youtube.com/embed/JxaHM2HpDZo" title="Copilot Digest 演示视频" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-				</div>
-				<p class="video-caption">演示视频。</p>
+				<h2>一个小 demo：Copilot Digest</h2>
 
-				<h2>接入方式：MCP 连接器模式</h2>
+				<p>为了将这一点付诸实践，我基于 QwenPaw 构建了一个名为 <strong>Copilot Digest</strong> (<a href="https://github.com/niceIrene/QwenPaw/tree/yin/copilot-digest">源码</a>) 的助手——可以把它想象成一个个性化的知识播客，帮你消化重要内容，在通勤、散步或做家务等碎片时间保持信息更新。它会摄取你发送给它、但没时间读的论文、文章、博客和新闻，然后将它们整理、排序、总结到一个本地知识库中。你可以浏览阅读列表、获取排序简报（"这周有什么值得关注的？"）、阅读完整文章摘要、深入讨论某篇论文、记录笔记和待办事项，以及导出编译报告。所有内容都以文件形式存储在你的机器上——一个包含索引、文章摘要、工作产出和导出的工作空间目录。</p>
 
-				<p>下一个问题是：你日常到底怎么用这个东西？Copilot Digest 最初运行在 QwenPaw 自己的网页控制台里。能用，但意味着又多了一个需要保持打开的界面——而且仍然需要屏幕。我真正想要的是彻底的解放双手。在碎片时间——走路、通勤、做家务——你没法坐在屏幕前，甚至在手机上打字都不太方便。但你可以说话。如果助手能大声跟你讨论阅读列表，并通过语音帮你记笔记，那些闲置时间就变成了生产力。</p>
+				<p>通过将定时任务指向你的 RSS 源或收藏链接，知识库会在你睡觉时自动增长。助手负责阅读、总结和归档；你只需出现并问有什么新的。这正是个人助手的用武之地——持续的、后台运行的工作，聊天机器人根本做不到。</p>
 
-				<p>这个动机促使我将助手暴露为 MCP 服务器，接入 Claude.ai 作为自定义连接器。Model Context Protocol (MCP; <a href="https://modelcontextprotocol.io/">modelcontextprotocol.io</a>) 是一个开放标准，用于将外部工具和数据源连接到 LLM 宿主。Claude.ai 在付费层级支持 MCP 连接器，这意味着任何遵循该协议的服务都可以扩展 Claude 的能力。</p>
+				<p>我最想让 Copilot Digest 做的第一件事，就是在我<em>不在</em>屏幕前的时候也能用它——通勤、散步、做家务。这意味着语音，也就意味着 ASR（自动语音识别）和 TTS（文本转语音）。但这些项目自带的聊天界面，包括 QwenPaw 自己的网页控制台，都不支持。从零搭一套语音栈，本身就是另一个项目。</p>
 
-				<h3>MCP 封装</h3>
+				<p>与其自己造，不如借一个。Claude.ai 在移动端已经有语音，所以只要能让 Claude 去调用我的 Copilot Digest agent，语音就白送到手了。路径就是 MCP：我把 Copilot Digest 暴露成一个 MCP 服务器，再作为自定义连接器注册到 Claude.ai 里。一个 LLM 宿主应用就变成了我本地 agent 的语音前端——agent 本身完全不用改。同一个核心，换一个消费者，移动端语音就突然能用了。</p>
 
-				<p>MCP 服务器 (<a href="https://github.com/niceIrene/QwenPaw/blob/yin/copilot-digest/src/qwenpaw/mcp_server/README.md">QwenPaw MCP 快速入门</a>) 将 Copilot Digest 的能力暴露为一组工具，背后是一个轻量级 HTTP 端点。启动 QwenPaw 后端、启动 MCP 服务器、打开 Cloudflare 隧道 (<a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/">developers.cloudflare.com</a>) 获取公网 HTTPS URL、在 Claude.ai 中注册为自定义连接器并配置 bearer token 认证，就完成了。几分钟就能搞定。</p>
+				<h2>开放讨论</h2>
 
-				<p>现在当我打开 Claude——无论是网页还是手机——我可以说"今天有什么新的？"Claude 就会调用连接器，访问我的本地知识库，然后朗读一份排序简报。在手机语音模式下，我一边散步一边听研究简报，追问某篇论文的细节，口述笔记——完全解放双手。这个技能就是为此设计的：每条回复都适合朗读，完整的句子，没有表格或 ASCII 图表 (<a href="https://github.com/niceIrene/QwenPaw/blob/yin/copilot-digest/src/qwenpaw/agents/skills/copilot_digest/SKILL.md">Copilot Digest SKILL.md</a>)。</p>
+				<p>还有几个我仍在想的问题——目前这一波项目也没完全回答。</p>
 
-				<h3>两类工具</h3>
+				<p><strong>agent、工具和调用方需要都跑在同一台机器上吗？</strong>最省事的情况是"是"。但实际很少如此——我希望能从手机上给跑在笔记本上的 agent 发消息（但我不想走消息渠道）；也希望在公司电脑上用 IDE 接入一台桌下 Mac mini 上的 agent。这两种场景都需要把 agent 暴露到宿主机之外，而每一条暴露路径都有安全成本。消息渠道会把 agent 敞开给任何能给它发消息的人——prompt injection 就成了现成的攻击面；而一旦 bot token 泄露，攻击者还能直接冒充 bot。直接把端口暴露到公网更糟：今年年初 Censys 扫到超过 21,000 个 OpenClaw 实例把 gateway 绑到了 <code>0.0.0.0</code> 而不是 <code>localhost</code>，其中很多泄露了 API key 和聊天记录 (<a href="https://censys.com/blog/openclaw-in-the-wild-mapping-the-public-exposure-of-a-viral-ai-assistant/">Censys, 2026</a>)。有几种做法值得考虑——每个接口面单独做认证（API key、OAuth）挡住没凭证的陌生人；每个调用方都有自己的白名单，让拿到 token 的人也只能做部分事；再把整套东西放进像 <a href="https://tailscale.com/">Tailscale</a> 这样的私有 overlay 网络里，让 agent 根本不用暴露到公网、连被敲门的机会都没有。</p>
 
-				<p>MCP 服务器的关键设计决策是将<strong>快速的确定性操作</strong>与<strong>慢速的 LLM 驱动操作</strong>分离。</p>
-
-				<p><strong>直接工作空间工具</strong>直接读写知识库文件。它们在毫秒内响应，助手侧零 token 消耗。列出阅读列表、获取文章摘要、标记已读、查看统计、从索引生成简报——这些都是文件操作。Claude（或任何其他 MCP 客户端）在前端处理自然语言部分，这是聊天会话本身就在做的事情。</p>
-
-				<p><strong>助手代理工具</strong>将请求转发到 QwenPaw 后端，由 Copilot Digest 助手执行真正的 LLM 工作：摄取 URL（抓取、提取、总结）、围绕文章进行多轮讨论、或生成结构化摘要。这些需要 10–60 秒并消耗 token，但只有在你明确要求重度处理时才会被调用。</p>
-
-				<p>实际使用中，大约 80% 的交互——浏览、阅读、状态追踪、简报——命中直接工具，助手侧零成本。昂贵的推理（定时摄取、索引、总结）仍然发生在助手端，但它与面向用户的层是完全分离的。你问"今天有什么新的？"不需要消耗 LLM token——那只是一次文件读取。助手按自己的时间表在后台完成重活，MCP 接口让你免费消费这些结果。</p>
-
-				<h2>为什么这个模式很重要</h2>
-
-				<p>我认为这里有一个更普遍的启示，关于 AI 助手应该如何呈现给用户。MCP 连接器模式是一个被低估的最佳平衡点——不是因为它解决了个人助手的问题，而是因为它让个人助手的优势变得触手可及。</p>
-
-				<p><strong>轻量级接入。</strong> 构建 channel 集成意味着要跟 webhook、bot token、平台专属消息格式和 webhook 生命周期管理搏斗——每个平台一个适配器。MCP 反转了这个模式：只需暴露一组工具，任何兼容的宿主都可以立即接入，只需要一个连接器 URL 和一个 bearer token。如果该宿主支持语音，你还能免费获得解放双手的体验。无需额外工作。</p>
-
-				<p><strong>不污染助手上下文。</strong> MCP 客户端在自己的上下文中跟你对话。当你浏览阅读列表或询问某篇文章时，MCP 客户端直接与工作空间交互——这些交互完全不会进入助手的上下文窗口。助手的上下文留给它自己的工作：摄取内容、总结、索引。你可以围绕阅读列表进行很长的来回对话，而助手侧一个 token 都不消耗。</p>
-
-				<p><strong>用户留在他们已有的工具里。</strong> 任何兼容 MCP 的宿主——聊天客户端、IDE、移动应用、网站——都可以立即连接到助手。用户不需要学习新界面或切换上下文。他们直接在手头已经打开的工具里与助手交互，保留该工具本身的历史和连续性。</p>
-
-				<p><strong>超越 channel 的扩展性。</strong> QwenPaw 的 channel 体系——钉钉、Discord、Telegram 等——功能强大，但每个集成都有自己的认证流程、消息格式和平台特有的坑。MCP 反转了这个模式：只需暴露一组工具，任何兼容的宿主都可以接入——无论是聊天客户端、移动应用，还是想直接嵌入你助手能力的网站。集成的负担从你转移到了宿主平台。更重要的是，MCP 允许你有选择性地暴露能力：启动一个范围严格受限的连接器，只暴露阅读列表和简报——没有 shell 访问、没有文件写入——然后把 URL 分享给任何人。一个助手，多个连接器，每个针对不同受众裁剪。Channel 对所有人广播同样的内容；MCP 连接器可以是精准的。</p>
-
-				<p><strong>服务商交付的可以是真正的助手，而不是聊天机器人。</strong> 因为接入如此轻量，在线服务商可以把真正的助手托管在自己的后端——使用自己的数据、自己的领域逻辑、以及 MCP 层面的工具安全控制——并将其暴露为一个连接器，让用户在任何已有的宿主中使用它，甚至可以作为嵌入式组件放在服务商自己的网页里。想象一个像 Redfin 这样的公司：今天它们在搜索页面上挂一个聊天机器人，而通过 MCP，它们可以暴露一个真正的助手，帮用户跨房源、成交对比、价格历史和看房预约来规划购房——在 Claude、IDE 里都能用，也能直接嵌在站点内部使用。重活留在服务端，只暴露经过选择的工具。这比为每个入口分别去做 channel 集成——或者再造一个聊天机器人——灵活得多。</p>
-
-				<h3>局限性</h3>
-
-				<p>这不是万能药，值得明确说明目前的粗糙之处：</p>
-
-				<ul>
-					<li>你需要保持 MCP 服务器和隧道运行。如果你的笔记本休眠，连接器就掉线。VPS 可以解决但增加了额外开销。</li>
-					<li>助手代理工具（URL 摄取、讨论）会带来明显的延迟——大型 PDF 有时需要一整分钟。</li>
-					<li>Claude.ai 的自定义连接器目前仅限付费层级。</li>
-					<li>你在耦合到特定平台的连接器实现。如果 Claude 改变连接器的工作方式，你需要适配。</li>
-				</ul>
-
-				<h2>设置</h2>
-
-				<p>想试试的话，完整的快速入门在我 fork 的 <a href="https://github.com/niceIrene/QwenPaw/tree/yin/copilot-digest">Copilot Digest 仓库</a>中。简短版本：</p>
-
-<pre><code># 终端 1：启动 QwenPaw 后端
-qwenpaw app
-
-# 终端 2：启动 MCP 服务器
-qwenpaw-mcp serve --no-auth --agent-id &lt;your-agent-id&gt; \
-  --workspace ~/.qwenpaw/workspaces/copilot-digest
-
-# 终端 3：打开隧道
-cloudflared tunnel --url http://127.0.0.1:8089
-</code></pre>
-
-				<p>然后将终端 3 输出的 Cloudflare 隧道 URL（<code>https://…trycloudflare.com</code>）注册为 MCP 客户端的自定义连接器。</p>
+				<p><strong>当 MCP、ACP 和消息渠道都不够用时怎么办？</strong>它们覆盖了常见场景，但本质上是通用型设计——为了服务尽可能多的调用方，只暴露所有人都能共用的那一小块能力。一个更高阶的构建者，如果想把助手深度嵌进一个产品里——带自定义状态、特定的 UI 语言、或某些没法用工具调用干净往返的操作——一定会撞墙。一个出口是项目本身给构建者提供 SDK，比如用来调用 <a href="https://qwenpaw.agentscope.io/docs/commands">"magic commands"</a>，把一些希望 agent 固定执行的操作沉淀下来——用户在对话框里输入的斜杠式快捷指令（比如 <code>/compact</code> 压缩上下文、<code>/clear</code> 清空会话），由构建者把它们映射到确定的操作上。好处是那些常用、希望行为稳定的操作能被固化下来；代价是这套指令只在认这套 SDK 的产品里能用。我猜做得好的助手最后会两条路都走：协议让别的系统能接进来，SDK 让构建者自己掌握面向用户的那一层。</p>
 
 				<h2>结语</h2>
 
-				<p>如果你正在构建一个 AI 助手，并在思考如何将它交付给用户，考虑一下这个模式：将领域逻辑构建为一个拥有本地工作空间的助手，将接口暴露为 MCP 工具，让现有平台处理最后一公里。你的用户获得语音、移动端和熟悉的聊天界面。你可以专注于让你的助手真正有用，而不是再造一个聊天应用。</p>
+				<p>大多数人今天用 AI，还是在用搜索引擎的方式——打开、输入、关闭。上面提到的这些项目指向一种更丰富的可能：一个能按自己的节奏运行、能接受来自其他 agent 和应用的调用、能出现在你本来就在工作的地方的助手。</p>
 
-				<p>个人 AI 助手的未来可能不是一个新的 App，而是一个连接器。</p>
+				<p>再往远一点想："个人（personal）"这个定位本身，也许也是一种自我限制。等 SDK 这一层真的被做起来、MCP 和 ACP 这些接口协议真的稳定下来之后，没有什么理由让这类系统永远停留在小众玩家手里——它完全可以成为默认形态，替代聊天机器人，成为大多数人接触 AI 的方式。今天的个人助手，也许就是明天人人都在用的智能体。</p>
+
 
 				<hr />
 
@@ -172,13 +122,11 @@ cloudflared tunnel --url http://127.0.0.1:8089
 
 				<ul class="refs">
 					<li>Anthropic. "Model Context Protocol." <a href="https://modelcontextprotocol.io/">modelcontextprotocol.io</a></li>
+					<li>Censys (2026). "OpenClaw in the Wild: Mapping the Public Exposure of a Viral AI Assistant." <a href="https://censys.com/blog/openclaw-in-the-wild-mapping-the-public-exposure-of-a-viral-ai-assistant/">censys.com</a></li>
 					<li>Greshake, K., Abdelnabi, S., Mishra, S., Endres, C., Holz, T., &amp; Fritz, M. (2023). "Not what you've signed up for: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection." <em>AISec 2023.</em></li>
 					<li>Nous Research. Hermes Agent. <a href="https://hermes-agent.nousresearch.com/">hermes-agent.nousresearch.com</a></li>
 					<li>OpenClaw. Documentation and security model. <a href="https://docs.openclaw.ai/">docs.openclaw.ai</a></li>
-					<li>QwenPaw. Repository: <a href="https://github.com/QwenPaw/QwenPaw">github.com/QwenPaw/QwenPaw</a></li>
-					<li>QwenPaw heartbeat documentation. <a href="https://qwenpaw.agentscope.io/docs/heartbeat">qwenpaw.agentscope.io/docs/heartbeat</a></li>
-					<li>QwenPaw security architecture. <a href="https://qwenpaw.agentscope.io/docs/security">qwenpaw.agentscope.io/docs/security</a></li>
-					<li>QwenPaw MCP server quickstart. <a href="https://github.com/niceIrene/QwenPaw/blob/yin/copilot-digest/src/qwenpaw/mcp_server/README.md">github.com/niceIrene/QwenPaw/blob/yin/copilot-digest/src/qwenpaw/mcp_server/README.md</a></li>
+					<li>QwenPaw. 仓库：<a href="https://github.com/agentscope-ai/QwenPaw">github.com/agentscope-ai/QwenPaw</a>。</li>
 					<li>Copilot Digest skill specification. <a href="https://github.com/niceIrene/QwenPaw/blob/yin/copilot-digest/src/qwenpaw/agents/skills/copilot_digest/SKILL.md">github.com/niceIrene/QwenPaw/blob/yin/copilot-digest/src/qwenpaw/agents/skills/copilot_digest/SKILL.md</a></li>
 					<li>Cloudflare Tunnel. <a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/">developers.cloudflare.com/cloudflare-one/connections/connect-networks/</a></li>
 				</ul>
