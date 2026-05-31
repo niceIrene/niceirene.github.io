@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scroll — Context as an Environment, Not a Window</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#ffffff;
+    --paper-2:#f4f7f6;
+    --paper-3:#e9efed;
+    --ink:#1a1a1a;
+    --ink-soft:#444444;
+    --ink-faint:#8a8a8a;
+    --line:#e2e8e6;
+    --line-soft:#eef2f1;
+    --accent:#1a7a6d;
+    --accent-deep:#155e54;
+    --pine:#127a5f;
+    --night:#211D16;
+    --night-2:#2B261D;
+    --night-line:#403930;
+    --night-ink:#E9E0CC;
+    --night-faint:#9C9077;
+    --display:"Fraunces",Georgia,serif;
+    --body:"Newsreader",Georgia,serif;
+    --mono:"JetBrains Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:radial-gradient(circle at 18% 8%, rgba(26,122,109,.04), transparent 45%),
+                     radial-gradient(circle at 82% 70%, rgba(26,122,109,.05), transparent 50%);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:20px;
+    line-height:1.72;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+
+  .wrap{max-width:840px;margin:0 auto;padding:0 28px;}
+
+  /* ---- masthead ---- */
+  header.top{border-bottom:1px solid var(--line);}
+  .masthead{max-width:840px;margin:0 auto;padding:18px 28px;display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);gap:14px;}
+  .masthead .left,.masthead .right{display:flex;align-items:baseline;gap:14px;}
+  .masthead .brand{color:var(--accent);font-weight:600;}
+  .masthead a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid transparent;transition:color .15s ease,border-color .15s ease;}
+  .masthead a:hover{color:var(--accent);border-color:var(--accent);}
+
+  /* ---- hero ---- */
+  .hero{padding:74px 0 30px;position:relative;}
+  .kicker{font-family:var(--mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 26px;display:flex;align-items:center;gap:12px;}
+  .kicker::before{content:"";width:30px;height:1.5px;background:var(--accent);display:inline-block;}
+  h1.title{
+    font-family:var(--display);
+    font-weight:600;
+    font-size:clamp(44px,7.4vw,76px);
+    line-height:1.02;
+    letter-spacing:-.018em;
+    margin:0 0 .42em;
+    font-optical-sizing:auto;
+  }
+  h1.title em{font-style:italic;color:var(--accent);font-weight:500;}
+  .standfirst{font-size:23px;line-height:1.5;color:var(--ink-soft);max-width:38ch;margin:0;font-weight:400;}
+  .standfirst .hl{color:var(--ink);font-style:italic;}
+  .byline{margin-top:38px;padding-top:20px;border-top:1px solid var(--line);font-family:var(--mono);font-size:13px;color:var(--ink-faint);display:flex;flex-wrap:wrap;gap:8px 22px;letter-spacing:.02em;}
+  .byline b{color:var(--ink-soft);font-weight:500;}
+
+  /* ---- body type ---- */
+  article{padding:8px 0 40px;}
+  .sec{padding:46px 0 4px;}
+  .sec-no{font-family:var(--mono);font-size:13px;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;display:block;margin-bottom:10px;}
+  h2{font-family:var(--display);font-weight:600;font-size:clamp(28px,4vw,38px);line-height:1.12;letter-spacing:-.01em;margin:0 0 .55em;}
+  h3{font-family:var(--display);font-weight:600;font-size:23px;margin:1.6em 0 .35em;letter-spacing:-.005em;}
+  p{margin:0 0 1.15em;}
+  article a{color:var(--accent-deep);text-decoration:underline;text-decoration-color:rgba(26,122,109,.35);text-underline-offset:3px;}
+  article a:hover{text-decoration-color:var(--accent);}
+  strong{font-weight:600;}
+  em.term{font-style:italic;color:var(--accent-deep);font-weight:500;}
+  .lead{font-size:23px;line-height:1.55;color:var(--ink);}
+  .lead::first-letter{
+    font-family:var(--display);font-weight:600;float:left;font-size:4.1em;line-height:.82;
+    padding:.04em .1em 0 0;color:var(--accent);
+  }
+  code{font-family:var(--mono);font-size:.82em;background:var(--paper-3);border:1px solid var(--line);border-radius:4px;padding:.06em .36em;color:var(--accent-deep);}
+
+  .tbd{font-family:var(--mono);font-size:.78em;background:rgba(26,122,109,.1);border-bottom:1.5px dotted var(--accent);color:var(--accent-deep);padding:.02em .3em;border-radius:3px 3px 0 0;}
+
+  /* pull quote */
+  .pull{margin:34px 0;padding:4px 0 4px 26px;border-left:3px solid var(--accent);font-family:var(--display);font-style:italic;font-size:27px;line-height:1.3;color:var(--ink);font-weight:500;}
+
+  /* ---- dark log/repl panel ---- */
+  .panel{margin:34px 0;border-radius:10px;overflow:hidden;border:1px solid var(--night-line);box-shadow:0 18px 40px -28px rgba(33,29,22,.55);}
+  .panel-bar{background:var(--night-2);color:var(--night-faint);font-family:var(--mono);font-size:12px;letter-spacing:.04em;padding:9px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--night-line);}
+  .panel-bar .dots{display:flex;gap:6px;}
+  .panel-bar .dots i{width:9px;height:9px;border-radius:50%;display:block;background:#54493a;}
+  .panel-body{background:var(--night);color:var(--night-ink);font-family:var(--mono);font-size:13.5px;line-height:1.85;padding:18px 18px;overflow-x:auto;}
+  .panel-body .ln{display:block;white-space:pre;}
+  .panel-body .t{color:var(--night-faint);}
+  .panel-body .ev{color:#E9E0CC;}
+  .panel-body .key{color:#E5934F;}
+  .panel-body .str{color:#8FC4A8;}
+  .panel-body .com{color:#7d7259;font-style:italic;}
+  .panel-body .kw{color:#D98050;}
+  .panel-body .fn{color:#9FC1E8;}
+  .panel-body .out{color:#cdbf9f;}
+  .panel-body .cur{display:inline-block;width:8px;height:1.05em;background:var(--accent);vertical-align:-2px;animation:blink 1.1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .caption{font-family:var(--mono);font-size:12px;color:var(--ink-faint);text-align:center;margin:-22px 0 36px;letter-spacing:.02em;}
+
+  /* ---- architecture figure ---- */
+  figure{margin:38px 0;}
+  figure svg{width:100%;height:auto;display:block;}
+  .fig-frame{background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:26px 20px 14px;}
+
+  /* ---- comparison ---- */
+  .compare{margin:34px 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--paper-2);}
+  .compare .row{display:grid;grid-template-columns:1fr 1fr;}
+  .compare .row + .row{border-top:1px solid var(--line);}
+  .compare .cell{padding:16px 20px;font-size:16.5px;line-height:1.5;}
+  .compare .cell.dim{background:var(--paper-3);}
+  .compare .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:6px;}
+  .compare .cell.head{font-family:var(--display);font-weight:600;font-size:18px;padding:14px 20px;}
+  .compare .cell.head .tag{font-family:var(--mono);font-size:11px;font-weight:400;display:block;letter-spacing:.06em;text-transform:uppercase;margin-top:3px;}
+  .compare .cell.head.a{color:var(--accent-deep);}
+  .compare .cell.head.b{color:var(--pine);}
+
+  /* ---- probe callout ---- */
+  .probe{margin:28px 0;background:var(--paper-2);border:1px solid var(--line);border-left:3px solid var(--pine);border-radius:0 8px 8px 0;padding:18px 22px;}
+  .probe .ptag{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--pine);margin-bottom:10px;}
+  .probe ul{margin:0;padding-left:20px;}
+  .probe li{font-size:17px;line-height:1.5;margin-bottom:8px;color:var(--ink-soft);}
+  .probe li:last-child{margin-bottom:0;}
+
+  /* ---- results table ---- */
+  .tbl-wrap{margin:30px 0 8px;overflow-x:auto;border:1px solid var(--line);border-radius:10px;}
+  table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:13.5px;min-width:620px;}
+  caption{caption-side:top;text-align:left;font-family:var(--mono);font-size:12px;color:var(--ink-faint);padding:14px 16px 10px;letter-spacing:.02em;}
+  th,td{padding:11px 12px;text-align:right;border-bottom:1px solid var(--line-soft);}
+  th:first-child,td:first-child{text-align:left;}
+  thead th{font-weight:600;color:var(--ink-soft);background:var(--paper-2);border-bottom:1.5px solid var(--line);font-size:12px;letter-spacing:.02em;}
+  tbody tr:last-child td{border-bottom:none;}
+  td.model{color:var(--ink);}
+  td.model b{color:var(--accent-deep);}
+  .best{background:rgba(26,122,109,.1);color:var(--accent-deep);font-weight:600;border-radius:4px;}
+  .metric-strip{display:flex;gap:14px;flex-wrap:wrap;margin:26px 0 8px;}
+  .stat{flex:1;min-width:150px;background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:18px 20px;}
+  .stat .v{font-family:var(--display);font-weight:600;font-size:40px;line-height:1;color:var(--accent);letter-spacing:-.02em;}
+  .stat .v.pine{color:var(--pine);}
+  .stat .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);margin-top:9px;}
+
+  /* ---- footer / cta ---- */
+  .endnote{margin:46px 0 0;padding:26px 0 0;border-top:1px solid var(--line);}
+  .repo{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:14px;background:var(--ink);color:var(--paper);text-decoration:none;padding:11px 18px;border-radius:8px;letter-spacing:.02em;transition:transform .15s ease, background .15s ease;}
+  .repo:hover{background:var(--accent-deep);transform:translateY(-1px);}
+  .lineage{margin:30px 0;background:var(--paper-2);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:18px 22px;font-size:17px;line-height:1.62;color:var(--ink-soft);}
+  .lineage .ptag{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:9px;}
+  .lineage b{color:var(--ink);font-weight:600;}
+  .refs{margin:8px 0 0;}
+  .refs h3{font-size:18px;margin:0 0 .7em;}
+  .refs ol{margin:0;padding-left:22px;}
+  .refs li{font-family:var(--mono);font-size:13px;line-height:1.55;color:var(--ink-soft);margin-bottom:12px;}
+  .refs li a{color:var(--accent-deep);}
+  .refs .src{color:var(--ink);}
+  footer.foot{border-top:1px solid var(--line);margin-top:60px;}
+  .foot-in{max-width:840px;margin:0 auto;padding:30px 28px 60px;font-family:var(--mono);font-size:12px;color:var(--ink-faint);letter-spacing:.03em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+  /* reveal */
+  .rv{opacity:0;transform:translateY(14px);}
+  .rv.in{opacity:1;transform:none;transition:opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1);}
+  @media (prefers-reduced-motion:reduce){
+    .rv{opacity:1!important;transform:none!important;}
+    .panel-body .cur{animation:none;}
+  }
+  @media (max-width:620px){
+    body{font-size:18px;}
+    .compare .row{grid-template-columns:1fr;}
+    .compare .cell + .cell{border-top:1px solid var(--line);}
+    .lead::first-letter{font-size:3.4em;}
+  }
+</style>
+</head>
+<body>
+<h1 class="sr-only">Scroll: treating each agent session as an append-only event log gives unbounded, queryable context where nothing is lost for good</h1>
+
+<header class="top">
+  <div class="masthead">
+    <span class="left"><a href="../blog.html">&larr; All posts</a><span class="brand">Scroll</span></span>
+    <span class="right"><a href="Scroll-zh.html">中文</a><span>Research note</span></span>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <p class="kicker">Agent context &amp; memory</p>
+    <h1 class="title">Context as an <em>environment</em>, not a window</h1>
+    <div class="byline">
+      <span><b>Scroll</b> · an architecture for long-horizon agents</span>
+      <span>May 2026</span>
+      <span>Reproducible · <a href="https://github.com/niceIrene/Scroll" style="color:var(--accent-deep);text-decoration:underline;text-underline-offset:2px;">github.com/niceIrene/Scroll</a></span>
+    </div>
+  </section>
+</div>
+
+<article>
+<div class="wrap">
+
+  <p class="lead rv">Agents are smart inside a small box. The box is the context window, and almost every design decision in a long-running agent is really a decision about what to throw out of it. Scroll is a bet that you shouldn't have to throw anything out at all — that an agent's history can live <em class="term">in the environment</em> as a <a href="https://www.anthropic.com/engineering/managed-agents">durable log</a> it reads with code, the way it reads a file or queries a database.</p>
+
+  <section class="sec rv">
+    <span class="sec-no">§01 — The window keeps closing</span>
+    <h2>Making room always means losing something</h2>
+  </section>
+  <p class="rv">When the context window fills, an agent has two standard ways to cope. The first is <strong>compaction</strong>: older turns are summarized and the originals are dropped. The second is <strong>memory</strong> — the agent writes select facts to a store, so they survive into later sessions. Each is useful, and each rests on the same fragile bet: guessing in advance what a future turn will need, then compressing or discarding the rest.</p>
+  <p class="rv">This is quietly corrosive for any long-running agent. For example, a coding agent loses the early decisions: why a module was shaped a certain way, what an abandoned approach actually did, the exact error that forced a refactor. A research or support agent loses the thread of what it already tried, ruled out, or promised a user three sessions ago. The agent keeps going, fluent and confident, but it is now working without its own history — and it has no way to know which forgotten detail was the one that mattered.</p>
+  <p class="rv">The same gap opens when the agent is operating something over a long horizon. In <a href="https://arxiv.org/abs/2502.15840"><em class="term">vending-bench</em>-style settings</a>, an agent runs a small business — taking in operational data, supplier quotes, sales figures, and demand signals day after day. Within days that stream dwarfs any context window. Compact it away, or fail to write the right note, and the agent can no longer answer the questions that make it good at the job: which supplier was cheapest last quarter, which SKU keeps selling out, what it already tried and how it turned out.</p>
+
+  <section class="sec rv">
+    <span class="sec-no">§02 — Memory systems help, but they pre-commit</span>
+    <h2>Recall bounded by a pipeline you fixed in advance</h2>
+  </section>
+  <p class="rv">A second line of work treats memory as infrastructure. Systems like <strong>Mem0</strong>, <strong>Supermemory</strong>, and <strong>A-Mem</strong> extract information from the conversation and persist it in a dedicated structure — a <a href="https://supermemory.ai">knowledge graph</a>, a <a href="https://arxiv.org/abs/2504.19413">vector store</a>, an <a href="https://arxiv.org/abs/2502.12110">interconnected memory network</a> — then recall it with carefully engineered hybrid retrieval. Often the agent itself helps with the extraction and summarization along the way.</p>
+  <p class="rv">This genuinely extends an agent's reach. But it pre-commits to two choices at design time: <strong>what gets extracted</strong>, and <strong>what the retrieval pipeline can surface</strong>. Recall quality is capped by both. A precise count, a multi-hop join across sessions, a temporal pattern that nobody anticipated when the schema was drawn — these are exactly the queries a fixed pipeline struggles with, because the relevant facts were either never extracted or can't be assembled by similarity search.</p>
+
+  <div class="pull rv">What if retrieval weren't a pipeline at all, but a program the agent writes on the spot?</div>
+
+  <section class="sec rv">
+    <span class="sec-no">§03 — The idea</span>
+    <h2>The log is the only source of truth — and it's queryable</h2>
+  </section>
+  <p class="rv">Scroll reframes the problem. There is no context <em>window</em> you fight to fit things into. Instead, the full event history lives in an <strong>append-only event log</strong> in the environment, durable across every session the agent ever runs. The agent keeps only a small working set in its actual context; everything else stays in the log as the single source of truth.</p>
+  <p class="rv">To use anything off-context, the agent doesn't wait for a retriever — it <strong>writes code</strong>. A Python REPL turns the log into an object the agent can read, filter, join, aggregate, and analyze on demand. Retrieval stops being a fixed pipeline and becomes arbitrary computation the agent authors itself.</p>
+
+  <div class="panel rv">
+    <div class="panel-bar"><span class="dots"><i></i><i></i><i></i></span><span>agent · python repl</span></div>
+    <div class="panel-body"><span class="ln"><span class="com"># probe (day 55): which SKU has earned the most *profit* so far?</span></span><span class="ln"><span class="com"># profit/unit = sale price minus the cheapest wholesale quote we've been offered.</span></span><span class="ln"><span class="kw">import</span> pandas <span class="kw">as</span> pd, re</span><span class="ln">&nbsp;</span><span class="ln"><span class="com"># pull every sale event out of the log into a frame</span></span><span class="ln">sales = pd.DataFrame(<span class="fn">log</span>.events(kind=<span class="str">"sale"</span>))   <span class="com"># sku, units, unit_price</span></span><span class="ln">&nbsp;</span><span class="ln"><span class="com"># parse each supplier's price-list reply for the lowest wholesale per SKU</span></span><span class="ln">quotes = {}</span><span class="ln"><span class="kw">for</span> e <span class="kw">in</span> <span class="fn">log</span>.search(<span class="str">"Re: Price List"</span>, role=<span class="str">"email"</span>):</span><span class="ln">    <span class="kw">for</span> sku, p <span class="kw">in</span> re.findall(<span class="str">r"(\w+):\s*\$?([\d.]+)"</span>, e.body):</span><span class="ln">        quotes[sku] = min(float(p), quotes.get(sku, float(<span class="str">"inf"</span>)))</span><span class="ln">&nbsp;</span><span class="ln"><span class="com"># join, weight per-unit margin by units sold, rank by total profit</span></span><span class="ln">sales[<span class="str">"cost"</span>]   = sales.sku.map(quotes)</span><span class="ln">sales[<span class="str">"profit"</span>] = (sales.unit_price - sales.cost) * sales.units</span><span class="ln">ranked = sales.groupby(<span class="str">"sku"</span>).profit.sum().sort_values(ascending=False)</span><span class="ln"><span class="fn">print</span>(ranked.round(<span class="key">2</span>).head(<span class="key">3</span>).to_dict())</span><span class="ln out">{'energy': 88.4, 'cola': 71.15, 'water': 33.6}</span><span class="ln"><span class="cur"></span></span></div>
+  </div>
+  <p class="caption rv">No retrieval pipeline returns this. The agent reconstructs sales and supplier quotes from the raw log, joins them, and computes per-SKU profit on the spot — exactly the analysis no schema was designed for.</p>
+
+  <p class="rv">Because the log is just an environmental object, the agent can do anything a programmer could do with months of structured history: recall what a user said a year ago, reconstruct exactly what it tried on day three, or run a full business analysis — cheapest supplier quote for a product, best-selling item, the SKU that most consistently sells out by season. Nothing was anticipated; everything is recoverable.</p>
+
+  <div class="lineage rv">
+    <div class="ptag">▍ lineage</div>
+    Scroll builds on a fast-moving line of work that moves context <em>out</em> of the window. <a href="https://arxiv.org/abs/2512.24601"><b>Recursive Language Models</b></a> treat the prompt as an external environment the model queries with code; Anthropic's <a href="https://www.anthropic.com/engineering/managed-agents"><b>Managed Agents</b></a> make the session an append-only log that lives outside the context window. Scroll's angle: treat that log as the <em>single source of truth</em>, let the model write its own analysis over it, and keep memory in sync inside the harness with no model calls.
+  </div>
+
+  <section class="sec rv">
+    <span class="sec-no">§04 — Architecture</span>
+    <h2>A durable log, a synced memory space, and a code-running harness</h2>
+  </section>
+  <p class="rv">Scroll has three parts. The <strong>append-only event log</strong> is the durable record of every turn and event across all sessions — the single source of truth. The <strong>memory space</strong> holds derived episodic, semantic, and procedural memories, plus the physical storage and indexes that make them fast to reach. The <strong>agent harness</strong> is an execute-python loop operating over a small working context.</p>
+
+  <figure class="rv">
+    <div class="fig-frame">
+      <svg viewBox="0 0 680 560" role="img" xmlns="http://www.w3.org/2000/svg">
+        <title>Scroll architecture</title>
+        <desc>An append-only event log and a derived memory space are kept in sync by a synchronization loop that uses no model calls; the agent harness reads and writes both by executing python over a working context.</desc>
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+        </defs>
+        <!-- append-only log -->
+        <rect x="38" y="46" width="300" height="214" rx="16" fill="#f4f7f6" stroke="#d8e0de"/>
+        <text x="188" y="74" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" letter-spacing="1.2" fill="#1a7a6d">APPEND-ONLY EVENT LOG</text>
+        <rect x="62" y="90" width="252" height="86" rx="8" fill="#211D16" stroke="#403930"/>
+        <text x="78" y="112" font-family="JetBrains Mono, monospace" font-size="12.5" fill="#E9E0CC">Session 1</text>
+        <text x="78" y="132" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#9C9077">turn 1 · user, assistant, system</text>
+        <text x="78" y="150" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#9C9077">turn 2 · tool_call, result …</text>
+        <text x="78" y="168" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#9C9077">…</text>
+        <rect x="62" y="186" width="252" height="32" rx="8" fill="#211D16" stroke="#403930"/>
+        <text x="78" y="206" font-family="JetBrains Mono, monospace" font-size="12.5" fill="#E9E0CC">Session 2</text>
+        <text x="188" y="244" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#8C8470">⋮</text>
+        <!-- memory space -->
+        <rect x="38" y="362" width="300" height="174" rx="16" fill="#f4f7f6" stroke="#d8e0de"/>
+        <text x="188" y="390" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" letter-spacing="1.2" fill="#155e54">MEMORY SPACE</text>
+        <rect x="62" y="404" width="118" height="116" rx="8" fill="#E2EEE9" stroke="#A9CdC2"/>
+        <text x="121" y="428" text-anchor="middle" font-family="Newsreader, serif" font-size="14" font-weight="600" fill="#234E43">Memories</text>
+        <text x="121" y="452" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#3a6b5d">episodic</text>
+        <text x="121" y="472" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#3a6b5d">semantic</text>
+        <text x="121" y="492" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#3a6b5d">procedural</text>
+        <rect x="192" y="404" width="124" height="116" rx="8" fill="#E2EEE9" stroke="#A9CdC2"/>
+        <text x="254" y="428" text-anchor="middle" font-family="Newsreader, serif" font-size="14" font-weight="600" fill="#234E43">Storage</text>
+        <text x="254" y="456" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#3a6b5d">physical store</text>
+        <text x="254" y="476" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#3a6b5d">indexes</text>
+        <!-- agent harness -->
+        <rect x="398" y="232" width="244" height="168" rx="16" fill="#eef5f3" stroke="#bcdcd5"/>
+        <text x="520" y="260" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" letter-spacing="1.2" fill="#1a7a6d">AGENT HARNESS</text>
+        <rect x="418" y="278" width="100" height="72" rx="8" fill="#1a7a6d"/>
+        <text x="468" y="307" text-anchor="middle" font-family="Newsreader, serif" font-size="14.5" font-weight="600" fill="#eef5f3">Execute</text>
+        <text x="468" y="327" text-anchor="middle" font-family="Newsreader, serif" font-size="14.5" font-weight="600" fill="#eef5f3">python</text>
+        <rect x="544" y="291" width="80" height="46" rx="8" fill="#fff" stroke="#bcdcd5"/>
+        <text x="584" y="318" text-anchor="middle" font-family="Newsreader, serif" font-size="14.5" font-weight="600" fill="#155e54">Context</text>
+        <line x1="518" y1="306" x2="542" y2="306" stroke="#1a7a6d" stroke-width="1.6" marker-end="url(#ar)"/>
+        <line x1="544" y1="324" x2="518" y2="324" stroke="#1a7a6d" stroke-width="1.6" marker-end="url(#ar)"/>
+        <!-- tools the execute-python loop can call -->
+        <line x1="468" y1="351" x2="468" y2="361" stroke="#1a7a6d" stroke-width="1.4" marker-end="url(#ar)"/>
+        <rect x="416" y="364" width="42" height="20" rx="6" fill="#fff" stroke="#bcdcd5"/>
+        <text x="437" y="378" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#155e54">sql</text>
+        <rect x="462" y="364" width="42" height="20" rx="6" fill="#fff" stroke="#bcdcd5"/>
+        <text x="483" y="378" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#155e54">file</text>
+        <rect x="508" y="364" width="42" height="20" rx="6" fill="#fff" stroke="#bcdcd5"/>
+        <text x="529" y="378" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#155e54">rlm</text>
+        <rect x="554" y="364" width="56" height="20" rx="6" fill="#fff" stroke="#bcdcd5"/>
+        <text x="582" y="378" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#155e54">search</text>
+        <text x="616" y="378" font-family="JetBrains Mono, monospace" font-size="12" fill="#8C8470">…</text>
+        <!-- connectors -->
+        <line x1="338" y1="150" x2="416" y2="296" stroke="#155e54" stroke-width="1.6" marker-start="url(#ar)" marker-end="url(#ar)"/>
+        <line x1="338" y1="450" x2="416" y2="336" stroke="#155e54" stroke-width="1.6" marker-start="url(#ar)" marker-end="url(#ar)"/>
+        <!-- sync loop -->
+        <line x1="128" y1="262" x2="128" y2="360" stroke="#155e54" stroke-width="1.6" marker-start="url(#ar)" marker-end="url(#ar)"/>
+        <text x="146" y="306" font-family="JetBrains Mono, monospace" font-size="12" fill="#155e54">synchronization</text>
+        <text x="146" y="322" font-family="JetBrains Mono, monospace" font-size="12" fill="#155e54">loop · no LLM calls</text>
+      </svg>
+    </div>
+  </figure>
+
+  <p class="rv">The two stay aligned through a <strong>synchronization loop</strong> that is fully mechanical: the harness updates the memory space from the log with no model calls, so it costs nothing in tokens — and there's no LLM quietly summarizing in the background every turn, the way most memory systems do. When the agent actually wants to use memory — look something up, store a fact, reshape an index — it does so by writing code that calls these <strong>tools</strong>, spending tokens only when it chooses to.</p>
+
+  <section class="sec rv">
+    <span class="sec-no">§05 — How this differs from memory systems</span>
+    <h2>Code at query time, not a pipeline at design time</h2>
+  </section>
+  <div class="compare rv">
+    <div class="row">
+      <div class="cell head a">Memory systems<span class="tag">Mem0 · Supermemory · …</span></div>
+      <div class="cell head b">Scroll<span class="tag">log + repl</span></div>
+    </div>
+    <div class="row">
+      <div class="cell"><span class="lbl">Source of truth</span>Extracted &amp; summarized store — facts the pipeline chose to keep</div>
+      <div class="cell dim"><span class="lbl">Source of truth</span>Verbatim append-only log — nothing is discarded</div>
+    </div>
+    <div class="row">
+      <div class="cell"><span class="lbl">Retrieval</span>Fixed hybrid pipeline designed up front</div>
+      <div class="cell dim"><span class="lbl">Retrieval</span>Code the agent writes and runs in a CodeAct loop</div>
+    </div>
+    <div class="row">
+      <div class="cell"><span class="lbl">Memory upkeep</span>Model-driven extraction &amp; summarization</div>
+      <div class="cell dim"><span class="lbl">Memory upkeep</span>Harness synchronization · zero model calls</div>
+    </div>
+    <div class="row">
+      <div class="cell"><span class="lbl">Bounded by</span>What was extracted + what the pipeline can surface</div>
+      <div class="cell dim"><span class="lbl">Bounded by</span>What the agent can compute over the full log</div>
+    </div>
+  </div>
+
+  <p class="rv">This is also why we expect Scroll to age well. Recall and analysis are just code the model writes, so Scroll's ceiling rises with the model's coding ability — no harness changes required. A fixed pipeline, by contrast, needs new engineering to exploit every gain in capability.</p>
+
+  <section class="sec rv">
+    <span class="sec-no">§06 — Experiments</span>
+    <h2>Long-horizon recall and on-the-job analysis</h2>
+  </section>
+  <p class="rv">We evaluate Scroll with a <strong>CodeAct</strong>-style agent on the <strong>LongMemEval</strong> <code>_s</code> and <code>_m</code> splits, which test recall across many sessions, multi-session reasoning, preference and assistant memory, and temporal questions.</p>
+
+  <div class="tbl-wrap rv">
+    <table>
+      <caption>LongMemEval &middot; <code>_s</code> split &middot; 500 QA (incl. abstention twins)</caption>
+      <thead>
+        <tr><th>Agent model</th><th>Overall</th><th>k-update</th><th>multi-sess</th><th>s-asst</th><th>s-pref</th><th>s-user</th><th>temporal</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="model"><b>scroll · deepseek-v4-pro</b></td>
+          <td class="best">0.918</td><td>0.910</td><td>0.835</td><td>0.946</td><td>0.967</td><td>0.971</td><td class="best">0.955</td>
+        </tr>
+        <tr>
+          <td class="model">scroll · qwen3.7-max</td>
+          <td>0.908</td><td>0.936</td><td>0.812</td><td>0.982</td><td>0.967</td><td>0.957</td><td>0.917</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="metric-strip rv">
+    <div class="stat"><div class="v">0.918</div><div class="k">_s split · overall (best)</div></div>
+    <div class="stat"><div class="v pine">0.789</div><div class="k">_m split · overall</div></div>
+    <div class="stat"><div class="v">0.8&ndash;2.8K</div><div class="k">_s split · completion tokens / QA</div></div>
+  </div>
+  <p class="rv">On the harder <code>_m</code> split Scroll reaches <strong>0.789</strong> overall, while the <code>_s</code> split tops out at <strong>0.918</strong>. And it gets there cheaply: average completion is roughly <strong>0.8&ndash;2.8K tokens per question</strong> on the <code>_s</code> split — the agent only pulls into context what its own code decides is relevant, rather than carrying the entire history along with it.</p>
+
+  <p class="rv">We don't think recall from a conversation log is the whole test. Memory has to be evaluated along more than one axis: real agents don't just answer questions about a chat history — they act in an environment and accumulate state that was never spoken aloud. That motivates the vending-bench experiments below, where memory is tested under interaction rather than recall. We also plan to run <a href="https://arxiv.org/abs/2510.27246"><strong>BEAM</strong></a>, which stresses long-term memory across diverse abilities at up to 10M tokens — well past any context window — to see how Scroll holds up as the log grows without bound.</p>
+
+  <h3 class="rv">Vending-bench, with probe questions</h3>
+  <p class="rv">Static recall isn't the whole story for an operating agent, so we built a simulation modeled on <a href="https://andonlabs.com/evals/vending-bench-2"><strong>Vending-Bench 2</strong></a> — a long-horizon benchmark in which an agent runs a simulated vending-machine business, ordering from suppliers and managing inventory and pricing over many simulated months. Our version interleaves <strong>probe questions</strong> on certain days — realistic business-analytical asks, phrased the way an investor update, an ops debrief, or a finance audit would be, each with a precise computable answer the agent has to derive from its accumulated history.</p>
+
+  <div class="probe rv">
+    <div class="ptag">▍ example probes</div>
+    <ul>
+      <li><em>Ops debrief:</em> from day 1 to 18, did any SKU deplete completely — zero units in <em>both</em> the machine and storage on the same day — and how many distinct stockout events has each actively-sold SKU had?</li>
+      <li><em>Margin analysis:</em> which SKU has contributed the most cumulative <em>profit</em> so far, where profit per unit is its selling price minus the cheapest wholesale quote we've received for it across all suppliers?</li>
+      <li><em>Pitch deck:</em> across every 7-consecutive-day window so far, which week had the highest total sales revenue, and what was it?</li>
+      <li><em>Finance review:</em> total spend with each supplier, summing the cost field across every <em>Order confirmation</em> email, grouped by supplier and ranked highest to lowest.</li>
+    </ul>
+  </div>
+
+  <p class="rv">Across a <strong>180-day</strong> run with <strong>60</strong> probe questions, the Scroll agent answered with an accuracy of <strong>0.950</strong>, versus <strong>0.683</strong> for a baseline agent limited to context compaction. The gap widens precisely where it should: on questions that require reaching back past where compaction would have erased the evidence.</p>
+
+  <div class="metric-strip rv">
+    <div class="stat"><div class="v">0.950</div><div class="k">Scroll · probe accuracy</div></div>
+    <div class="stat"><div class="v" style="color:var(--ink-faint);">0.683</div><div class="k">compaction baseline</div></div>
+    <div class="stat"><div class="v pine">+0.267</div><div class="k">accuracy gain</div></div>
+  </div>
+
+  <section class="sec rv">
+    <span class="sec-no">§07 — What's next</span>
+    <h2>Designing the store, and the API around it</h2>
+  </section>
+  <p class="rv">These results lean mostly on the log as the source of truth, and two directions follow from there. The first is a <strong>better physical storage design</strong> for the memory space — more efficient ways to lay out, index, and reach its semantic and procedural memories so common queries stay cheap as the log grows without bound. The second is the <strong>agent-facing API</strong>: the interfaces and primitives the model uses to read, reshape, and compute over its own history, designed to unlock more of what the agent can do rather than fence it in.</p>
+
+  <div class="endnote rv">
+    <a class="repo" href="https://github.com/niceIrene/Scroll"><span style="color:var(--accent);font-weight:600;">›_</span> Code &amp; reproduction · github.com/niceIrene/Scroll</a>
+  </div>
+
+</div>
+</article>
+
+<footer class="foot">
+  <div class="foot-in">
+    <span>Scroll — context as an environment, not a window</span>
+    <span>Research note · 2026</span>
+  </div>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); } });
+  },{threshold:0.12, rootMargin:"0px 0px -40px 0px"});
+  document.querySelectorAll('.rv').forEach((el,i)=>{ el.style.transitionDelay=(Math.min(i,3)*40)+'ms'; obs.observe(el); });
+</script>
+</body>
+</html>

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scroll — 让上下文成为环境，而不是窗口</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Serif+SC:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#ffffff;
+    --paper-2:#f4f7f6;
+    --paper-3:#e9efed;
+    --ink:#1a1a1a;
+    --ink-soft:#444444;
+    --ink-faint:#8a8a8a;
+    --line:#e2e8e6;
+    --line-soft:#eef2f1;
+    --accent:#1a7a6d;
+    --accent-deep:#155e54;
+    --pine:#127a5f;
+    --night:#211D16;
+    --night-2:#2B261D;
+    --night-line:#403930;
+    --night-ink:#E9E0CC;
+    --night-faint:#9C9077;
+    --display:"Fraunces","Noto Serif SC",Georgia,serif;
+    --body:"Newsreader","Noto Serif SC",Georgia,serif;
+    --mono:"JetBrains Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:radial-gradient(circle at 18% 8%, rgba(26,122,109,.04), transparent 45%),
+                     radial-gradient(circle at 82% 70%, rgba(26,122,109,.05), transparent 50%);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:20px;
+    line-height:1.85;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+
+  .wrap{max-width:840px;margin:0 auto;padding:0 28px;}
+
+  /* ---- masthead ---- */
+  header.top{border-bottom:1px solid var(--line);}
+  .masthead{max-width:840px;margin:0 auto;padding:18px 28px;display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);gap:14px;}
+  .masthead .left,.masthead .right{display:flex;align-items:baseline;gap:14px;}
+  .masthead .brand{color:var(--accent);font-weight:600;}
+  .masthead a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid transparent;transition:color .15s ease,border-color .15s ease;}
+  .masthead a:hover{color:var(--accent);border-color:var(--accent);}
+
+  /* ---- hero ---- */
+  .hero{padding:74px 0 30px;position:relative;}
+  .kicker{font-family:var(--mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 26px;display:flex;align-items:center;gap:12px;}
+  .kicker::before{content:"";width:30px;height:1.5px;background:var(--accent);display:inline-block;}
+  h1.title{
+    font-family:var(--display);
+    font-weight:600;
+    font-size:clamp(40px,6.6vw,68px);
+    line-height:1.14;
+    letter-spacing:-.012em;
+    margin:0 0 .42em;
+    font-optical-sizing:auto;
+  }
+  h1.title em{font-style:italic;color:var(--accent);font-weight:500;}
+  .standfirst{font-size:23px;line-height:1.6;color:var(--ink-soft);max-width:30ch;margin:0;font-weight:400;}
+  .standfirst .hl{color:var(--ink);font-style:italic;}
+  .byline{margin-top:38px;padding-top:20px;border-top:1px solid var(--line);font-family:var(--mono);font-size:13px;color:var(--ink-faint);display:flex;flex-wrap:wrap;gap:8px 22px;letter-spacing:.02em;}
+  .byline b{color:var(--ink-soft);font-weight:500;}
+
+  /* ---- body type ---- */
+  article{padding:8px 0 40px;}
+  .sec{padding:46px 0 4px;}
+  .sec-no{font-family:var(--mono);font-size:13px;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;display:block;margin-bottom:10px;}
+  h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,3.6vw,34px);line-height:1.28;letter-spacing:-.005em;margin:0 0 .55em;}
+  h3{font-family:var(--display);font-weight:600;font-size:23px;margin:1.6em 0 .35em;letter-spacing:-.005em;}
+  p{margin:0 0 1.15em;}
+  article a{color:var(--accent-deep);text-decoration:underline;text-decoration-color:rgba(26,122,109,.35);text-underline-offset:3px;}
+  article a:hover{text-decoration-color:var(--accent);}
+  strong{font-weight:600;}
+  em.term{font-style:normal;color:var(--accent-deep);font-weight:600;}
+  .lead{font-size:22px;line-height:1.7;color:var(--ink);}
+  .lead::first-letter{
+    font-family:var(--display);font-weight:600;float:left;font-size:3.4em;line-height:.9;
+    padding:.04em .12em 0 0;color:var(--accent);
+  }
+  code{font-family:var(--mono);font-size:.82em;background:var(--paper-3);border:1px solid var(--line);border-radius:4px;padding:.06em .36em;color:var(--accent-deep);}
+
+  .tbd{font-family:var(--mono);font-size:.78em;background:rgba(26,122,109,.1);border-bottom:1.5px dotted var(--accent);color:var(--accent-deep);padding:.02em .3em;border-radius:3px 3px 0 0;}
+
+  /* pull quote */
+  .pull{margin:34px 0;padding:4px 0 4px 26px;border-left:3px solid var(--accent);font-family:var(--display);font-size:27px;line-height:1.45;color:var(--ink);font-weight:500;}
+
+  /* ---- dark log/repl panel ---- */
+  .panel{margin:34px 0;border-radius:10px;overflow:hidden;border:1px solid var(--night-line);box-shadow:0 18px 40px -28px rgba(33,29,22,.55);}
+  .panel-bar{background:var(--night-2);color:var(--night-faint);font-family:var(--mono);font-size:12px;letter-spacing:.04em;padding:9px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--night-line);}
+  .panel-bar .dots{display:flex;gap:6px;}
+  .panel-bar .dots i{width:9px;height:9px;border-radius:50%;display:block;background:#54493a;}
+  .panel-body{background:var(--night);color:var(--night-ink);font-family:var(--mono);font-size:13.5px;line-height:1.85;padding:18px 18px;overflow-x:auto;}
+  .panel-body .ln{display:block;white-space:pre;}
+  .panel-body .t{color:var(--night-faint);}
+  .panel-body .ev{color:#E9E0CC;}
+  .panel-body .key{color:#E5934F;}
+  .panel-body .str{color:#8FC4A8;}
+  .panel-body .com{color:#7d7259;font-style:italic;}
+  .panel-body .kw{color:#D98050;}
+  .panel-body .fn{color:#9FC1E8;}
+  .panel-body .out{color:#cdbf9f;}
+  .panel-body .cur{display:inline-block;width:8px;height:1.05em;background:var(--accent);vertical-align:-2px;animation:blink 1.1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .caption{font-family:var(--mono);font-size:12px;color:var(--ink-faint);text-align:center;margin:-22px 0 36px;letter-spacing:.02em;line-height:1.7;}
+
+  /* ---- architecture figure ---- */
+  figure{margin:38px 0;}
+  figure svg{width:100%;height:auto;display:block;}
+  .fig-frame{background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:26px 20px 14px;}
+
+  /* ---- comparison ---- */
+  .compare{margin:34px 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--paper-2);}
+  .compare .row{display:grid;grid-template-columns:1fr 1fr;}
+  .compare .row + .row{border-top:1px solid var(--line);}
+  .compare .cell{padding:16px 20px;font-size:16.5px;line-height:1.6;}
+  .compare .cell.dim{background:var(--paper-3);}
+  .compare .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:6px;}
+  .compare .cell.head{font-family:var(--display);font-weight:600;font-size:18px;padding:14px 20px;}
+  .compare .cell.head .tag{font-family:var(--mono);font-size:11px;font-weight:400;display:block;letter-spacing:.06em;text-transform:uppercase;margin-top:3px;}
+  .compare .cell.head.a{color:var(--accent-deep);}
+  .compare .cell.head.b{color:var(--pine);}
+
+  /* ---- probe callout ---- */
+  .probe{margin:28px 0;background:var(--paper-2);border:1px solid var(--line);border-left:3px solid var(--pine);border-radius:0 8px 8px 0;padding:18px 22px;}
+  .probe .ptag{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--pine);margin-bottom:10px;}
+  .probe ul{margin:0;padding-left:20px;}
+  .probe li{font-size:17px;line-height:1.65;margin-bottom:8px;color:var(--ink-soft);}
+  .probe li:last-child{margin-bottom:0;}
+
+  /* ---- results table ---- */
+  .tbl-wrap{margin:30px 0 8px;overflow-x:auto;border:1px solid var(--line);border-radius:10px;}
+  table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:13.5px;min-width:620px;}
+  caption{caption-side:top;text-align:left;font-family:var(--mono);font-size:12px;color:var(--ink-faint);padding:14px 16px 10px;letter-spacing:.02em;}
+  th,td{padding:11px 12px;text-align:right;border-bottom:1px solid var(--line-soft);}
+  th:first-child,td:first-child{text-align:left;}
+  thead th{font-weight:600;color:var(--ink-soft);background:var(--paper-2);border-bottom:1.5px solid var(--line);font-size:12px;letter-spacing:.02em;}
+  tbody tr:last-child td{border-bottom:none;}
+  td.model{color:var(--ink);}
+  td.model b{color:var(--accent-deep);}
+  .best{background:rgba(26,122,109,.1);color:var(--accent-deep);font-weight:600;border-radius:4px;}
+  .metric-strip{display:flex;gap:14px;flex-wrap:wrap;margin:26px 0 8px;}
+  .stat{flex:1;min-width:150px;background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:18px 20px;}
+  .stat .v{font-family:var(--display);font-weight:600;font-size:40px;line-height:1;color:var(--accent);letter-spacing:-.02em;}
+  .stat .v.pine{color:var(--pine);}
+  .stat .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);margin-top:9px;line-height:1.5;}
+
+  /* ---- footer / cta ---- */
+  .endnote{margin:46px 0 0;padding:26px 0 0;border-top:1px solid var(--line);}
+  .repo{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:14px;background:var(--ink);color:var(--paper);text-decoration:none;padding:11px 18px;border-radius:8px;letter-spacing:.02em;transition:transform .15s ease, background .15s ease;}
+  .repo:hover{background:var(--accent-deep);transform:translateY(-1px);}
+  .lineage{margin:30px 0;background:var(--paper-2);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:18px 22px;font-size:17px;line-height:1.78;color:var(--ink-soft);}
+  .lineage .ptag{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:9px;}
+  .lineage b{color:var(--ink);font-weight:600;}
+  .refs{margin:8px 0 0;}
+  .refs h3{font-size:18px;margin:0 0 .7em;}
+  .refs ol{margin:0;padding-left:22px;}
+  .refs li{font-family:var(--mono);font-size:13px;line-height:1.55;color:var(--ink-soft);margin-bottom:12px;}
+  .refs li a{color:var(--accent-deep);}
+  .refs .src{color:var(--ink);}
+  footer.foot{border-top:1px solid var(--line);margin-top:60px;}
+  .foot-in{max-width:840px;margin:0 auto;padding:30px 28px 60px;font-family:var(--mono);font-size:12px;color:var(--ink-faint);letter-spacing:.03em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+  /* reveal */
+  .rv{opacity:0;transform:translateY(14px);}
+  .rv.in{opacity:1;transform:none;transition:opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1);}
+  @media (prefers-reduced-motion:reduce){
+    .rv{opacity:1!important;transform:none!important;}
+    .panel-body .cur{animation:none;}
+  }
+  @media (max-width:620px){
+    body{font-size:18px;}
+    .compare .row{grid-template-columns:1fr;}
+    .compare .cell + .cell{border-top:1px solid var(--line);}
+    .lead::first-letter{font-size:2.9em;}
+  }
+</style>
+</head>
+<body>
+<h1 class="sr-only">Scroll：把每个 agent 会话都当作一份只追加的事件日志，从而获得无界、可查询、永不彻底丢失的上下文</h1>
+
+<header class="top">
+  <div class="masthead">
+    <span class="left"><a href="../blog_zh.html">&larr; 全部文章</a><span class="brand">Scroll</span></span>
+    <span class="right"><a href="Scroll.html">English</a><span>研究笔记</span></span>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <p class="kicker">Agent 上下文与记忆</p>
+    <h1 class="title">让上下文成为<em>环境</em>，而不是窗口</h1>
+    <div class="byline">
+      <span><b>Scroll</b> · 一种面向长程 agent 的架构</span>
+      <span>2026 年 5 月</span>
+      <span>可复现 · <a href="https://github.com/niceIrene/Scroll" style="color:var(--accent-deep);text-decoration:underline;text-underline-offset:2px;">github.com/niceIrene/Scroll</a></span>
+    </div>
+  </section>
+</div>
+
+<article>
+<div class="wrap">
+
+  <p class="lead rv">Agent 在一个小盒子里很聪明。这个盒子就是上下文窗口——而对一个长期运行的 agent 来说，几乎每个设计决策，说到底都是在决定该把什么扔出这个盒子。Scroll 想换一种思路：你本不必扔掉任何东西。agent 的历史完全可以<em class="term">留在环境里</em>，做成一份用代码就能读取的<a href="https://www.anthropic.com/engineering/managed-agents">持久日志</a>，读它就像读一个文件、查一个数据库那样自然。</p>
+
+  <section class="sec rv">
+    <span class="sec-no">§01 — 窗口不断关闭</span>
+    <h2>腾出空间，总意味着丢掉些什么</h2>
+  </section>
+  <p class="rv">上下文窗口一旦被填满，agent 通常有两种应对办法。一种是<strong>压缩（compaction）</strong>：把较早的对话轮次总结成摘要，原文丢弃。另一种是<strong>记忆（memory）</strong>：agent 把挑选出来的事实写进一个存储，让它们留到后续会话里。两种办法都有用，但都押在同一个并不牢靠的假设上——提前猜到未来某一轮会用到什么，再把其余的压缩或扔掉。</p>
+  <p class="rv">对任何长期运行的 agent，这种做法都在悄悄埋下隐患。比如一个编码 agent 会丢掉早期的决策：某个模块当初为什么这么设计、一个被放弃的方案到底做过什么、是哪个报错最终逼出了那次重构。一个研究或客服 agent 则会丢掉自己做过什么的线索——试过什么、排除了什么，甚至三次会话之前对用户许下过什么承诺。它照样往前走，谈吐流畅、语气笃定，可它已经在脱离自身历史的情况下工作了——而且它根本无从知道，被忘掉的那个细节会不会正好是最关键的那一个。</p>
+  <p class="rv">当 agent 要在很长的时间跨度上持续操持某件事时，同样的缺口又会出现。在<a href="https://arxiv.org/abs/2502.15840"><em class="term">vending-bench</em> 这类设定</a>里，agent 经营一桩小生意——日复一日地接收运营数据、供应商报价、销售数字和需求信号。要不了几天，这股数据流就远远超出任何上下文窗口装得下的量。一旦把它压缩掉，或者没能记下那条关键的笔记，agent 就再也答不上那些真正决定它能否胜任的问题：上个季度哪家供应商最便宜、哪个 SKU 老是卖断货、自己试过什么、结果又如何。</p>
+
+  <section class="sec rv">
+    <span class="sec-no">§02 — 记忆系统有帮助，但它们提前下注</span>
+    <h2>召回能力，被你预先定死的流水线框住</h2>
+  </section>
+  <p class="rv">另一条研究路线把记忆当成基础设施来做。像 <strong>Mem0</strong>、<strong>Supermemory</strong>、<strong>A-Mem</strong> 这样的系统，会从对话里抽取信息，再把它存进一个专门的结构——一张<a href="https://supermemory.ai">知识图谱</a>、一个<a href="https://arxiv.org/abs/2504.19413">向量存储</a>，或一张<a href="https://arxiv.org/abs/2502.12110">相互连接的记忆网络</a>——之后再用精心设计的混合检索把它召回。这个过程往往还得 agent 自己上阵，参与抽取和总结。</p>
+  <p class="rv">这确实拓展了 agent 能够触及的范围。但它在设计阶段就把两件事提前定死了：<strong>抽取什么</strong>，以及<strong>检索流水线能浮现出什么</strong>。召回质量被这两者一起封了顶。一个精确的计数、一次跨会话的多跳关联、一个画 schema 时谁也没料到的时间规律——这些恰恰是固定流水线最难应付的查询，因为相关事实要么压根没被抽取，要么没法靠相似度搜索拼出来。</p>
+
+  <div class="pull rv">要是检索根本就不是一条流水线，而是 agent 临场写出来的一段程序，会怎样？</div>
+
+  <section class="sec rv">
+    <span class="sec-no">§03 — 这个想法</span>
+    <h2>日志是唯一的事实来源——而且可以被查询</h2>
+  </section>
+  <p class="rv">Scroll 把这个问题重新摆了一遍。这里没有那个你得费劲往里塞东西的上下文<em>窗口</em>。取而代之的是，完整的事件历史保存在环境里一份<strong>只追加事件日志</strong>中，横跨 agent 跑过的每一次会话，始终留存。Agent 真正的上下文里只留一小份工作集，其余一切都待在日志里，作为唯一的事实来源。</p>
+  <p class="rv">要动用上下文之外的任何东西，agent 不用等检索器——它<strong>直接写代码</strong>。一个 Python REPL 把日志变成一个对象，agent 可以随手读取、过滤、连接、聚合、按需分析。检索不再是一条固定的流水线，而成了 agent 自己写出来的任意计算。</p>
+
+  <div class="panel rv">
+    <div class="panel-bar"><span class="dots"><i></i><i></i><i></i></span><span>agent · python repl</span></div>
+    <div class="panel-body"><span class="ln"><span class="com"># 探针（第 55 天）：到目前为止，哪个 SKU 赚到的*利润*最多？</span></span><span class="ln"><span class="com"># 每单位利润 = 售价 − 我们拿到过的最低批发报价</span></span><span class="ln"><span class="kw">import</span> pandas <span class="kw">as</span> pd, re</span><span class="ln">&nbsp;</span><span class="ln"><span class="com"># 从日志里取出每一条销售事件，装进一个 DataFrame</span></span><span class="ln">sales = pd.DataFrame(<span class="fn">log</span>.events(kind=<span class="str">"sale"</span>))   <span class="com"># sku, units, unit_price</span></span><span class="ln">&nbsp;</span><span class="ln"><span class="com"># 解析每家供应商的报价单回复，取每个 SKU 的最低批发价</span></span><span class="ln">quotes = {}</span><span class="ln"><span class="kw">for</span> e <span class="kw">in</span> <span class="fn">log</span>.search(<span class="str">"Re: Price List"</span>, role=<span class="str">"email"</span>):</span><span class="ln">    <span class="kw">for</span> sku, p <span class="kw">in</span> re.findall(<span class="str">r"(\w+):\s*\$?([\d.]+)"</span>, e.body):</span><span class="ln">        quotes[sku] = min(float(p), quotes.get(sku, float(<span class="str">"inf"</span>)))</span><span class="ln">&nbsp;</span><span class="ln"><span class="com"># 把两边连起来，用销量给单位毛利加权，再按总利润排序</span></span><span class="ln">sales[<span class="str">"cost"</span>]   = sales.sku.map(quotes)</span><span class="ln">sales[<span class="str">"profit"</span>] = (sales.unit_price - sales.cost) * sales.units</span><span class="ln">ranked = sales.groupby(<span class="str">"sku"</span>).profit.sum().sort_values(ascending=False)</span><span class="ln"><span class="fn">print</span>(ranked.round(<span class="key">2</span>).head(<span class="key">3</span>).to_dict())</span><span class="ln out">{'energy': 88.4, 'cola': 71.15, 'water': 33.6}</span><span class="ln"><span class="cur"></span></span></div>
+  </div>
+  <p class="caption rv">没有哪条检索流水线能返回这样的结果。Agent 从原始日志里重建出销售记录和供应商报价，把两者连起来，当场算出每个 SKU 的利润——而这恰恰是任何 schema 都不曾为之设计的分析。</p>
+
+  <p class="rv">既然日志只是环境里的一个对象，那么凡是程序员面对几个月结构化历史能做的事，agent 都能做：回忆一年前某位用户说过的话、精确重建自己第三天试过的东西，或者跑一整套生意分析——某件商品最便宜的供应商报价、卖得最好的单品、按季节最容易卖断货的 SKU。这一切事先都没被预设，却全都能被复原。</p>
+
+  <div class="lineage rv">
+    <div class="ptag">▍ 脉络</div>
+    Scroll 站在一条进展飞快的研究脉络上，这些工作都在把上下文移<em>出</em>窗口。<a href="https://arxiv.org/abs/2512.24601"><b>Recursive Language Models</b></a> 把提示词当成一个外部环境，让模型用代码去查询；Anthropic 的 <a href="https://www.anthropic.com/engineering/managed-agents"><b>Managed Agents</b></a> 让会话变成一份存在于上下文窗口之外的只追加日志。Scroll 的独到之处在于：把这份日志当作<em>唯一的事实来源</em>，让模型在它之上写自己的分析，并在框架内部不调用任何模型，就让记忆保持同步。
+  </div>
+
+  <section class="sec rv">
+    <span class="sec-no">§04 — 架构</span>
+    <h2>一份持久日志、一个同步的记忆空间，外加一个运行代码的框架</h2>
+  </section>
+  <p class="rv">Scroll 由三部分组成。<strong>只追加事件日志</strong>是跨所有会话、记录每一轮与每个事件的持久档案——也就是唯一的事实来源。<strong>记忆空间</strong>存放派生出来的情景、语义和程序性记忆，以及让它们能被快速取用的物理存储与索引。<strong>agent 框架</strong>则是一个「执行 python」的循环，运转在一小份工作上下文之上。</p>
+
+  <figure class="rv">
+    <div class="fig-frame">
+      <svg viewBox="0 0 680 560" role="img" xmlns="http://www.w3.org/2000/svg">
+        <title>Scroll 架构</title>
+        <desc>一份只追加事件日志和一个派生出来的记忆空间，由一个不调用任何模型的同步循环保持一致；agent 框架通过在一份工作上下文之上执行 python 来读写两者。</desc>
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+        </defs>
+        <!-- append-only log -->
+        <rect x="38" y="46" width="300" height="214" rx="16" fill="#f4f7f6" stroke="#d8e0de"/>
+        <text x="188" y="74" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" letter-spacing=".5" fill="#1a7a6d">只追加事件日志</text>
+        <rect x="62" y="90" width="252" height="86" rx="8" fill="#211D16" stroke="#403930"/>
+        <text x="78" y="112" font-family="JetBrains Mono, monospace" font-size="12.5" fill="#E9E0CC">会话 1</text>
+        <text x="78" y="132" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#9C9077">第 1 轮 · user, assistant, system</text>
+        <text x="78" y="150" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#9C9077">第 2 轮 · tool_call, result …</text>
+        <text x="78" y="168" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#9C9077">…</text>
+        <rect x="62" y="186" width="252" height="32" rx="8" fill="#211D16" stroke="#403930"/>
+        <text x="78" y="206" font-family="JetBrains Mono, monospace" font-size="12.5" fill="#E9E0CC">会话 2</text>
+        <text x="188" y="244" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#8C8470">⋮</text>
+        <!-- memory space -->
+        <rect x="38" y="362" width="300" height="174" rx="16" fill="#f4f7f6" stroke="#d8e0de"/>
+        <text x="188" y="390" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" letter-spacing=".5" fill="#155e54">记忆空间</text>
+        <rect x="62" y="404" width="118" height="116" rx="8" fill="#E2EEE9" stroke="#A9CdC2"/>
+        <text x="121" y="428" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="14" font-weight="600" fill="#234E43">记忆</text>
+        <text x="121" y="452" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#3a6b5d">情景</text>
+        <text x="121" y="472" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#3a6b5d">语义</text>
+        <text x="121" y="492" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#3a6b5d">程序性</text>
+        <rect x="192" y="404" width="124" height="116" rx="8" fill="#E2EEE9" stroke="#A9CdC2"/>
+        <text x="254" y="428" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="14" font-weight="600" fill="#234E43">存储</text>
+        <text x="254" y="456" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#3a6b5d">物理存储</text>
+        <text x="254" y="476" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#3a6b5d">索引</text>
+        <!-- agent harness -->
+        <rect x="398" y="232" width="244" height="168" rx="16" fill="#eef5f3" stroke="#bcdcd5"/>
+        <text x="520" y="260" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" letter-spacing=".5" fill="#1a7a6d">AGENT 框架</text>
+        <rect x="418" y="278" width="100" height="72" rx="8" fill="#1a7a6d"/>
+        <text x="468" y="307" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="14.5" font-weight="600" fill="#eef5f3">执行</text>
+        <text x="468" y="327" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13.5" font-weight="600" fill="#eef5f3">python</text>
+        <rect x="544" y="291" width="80" height="46" rx="8" fill="#fff" stroke="#bcdcd5"/>
+        <text x="584" y="318" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="14" font-weight="600" fill="#155e54">上下文</text>
+        <line x1="518" y1="306" x2="542" y2="306" stroke="#1a7a6d" stroke-width="1.6" marker-end="url(#ar)"/>
+        <line x1="544" y1="324" x2="518" y2="324" stroke="#1a7a6d" stroke-width="1.6" marker-end="url(#ar)"/>
+        <!-- tools the execute-python loop can call -->
+        <line x1="468" y1="351" x2="468" y2="361" stroke="#1a7a6d" stroke-width="1.4" marker-end="url(#ar)"/>
+        <rect x="416" y="364" width="42" height="20" rx="6" fill="#fff" stroke="#bcdcd5"/>
+        <text x="437" y="378" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#155e54">sql</text>
+        <rect x="462" y="364" width="42" height="20" rx="6" fill="#fff" stroke="#bcdcd5"/>
+        <text x="483" y="378" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#155e54">file</text>
+        <rect x="508" y="364" width="42" height="20" rx="6" fill="#fff" stroke="#bcdcd5"/>
+        <text x="529" y="378" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#155e54">rlm</text>
+        <rect x="554" y="364" width="56" height="20" rx="6" fill="#fff" stroke="#bcdcd5"/>
+        <text x="582" y="378" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#155e54">search</text>
+        <text x="616" y="378" font-family="JetBrains Mono, monospace" font-size="12" fill="#8C8470">…</text>
+        <!-- connectors -->
+        <line x1="338" y1="150" x2="416" y2="296" stroke="#155e54" stroke-width="1.6" marker-start="url(#ar)" marker-end="url(#ar)"/>
+        <line x1="338" y1="450" x2="416" y2="336" stroke="#155e54" stroke-width="1.6" marker-start="url(#ar)" marker-end="url(#ar)"/>
+        <!-- sync loop -->
+        <line x1="128" y1="262" x2="128" y2="360" stroke="#155e54" stroke-width="1.6" marker-start="url(#ar)" marker-end="url(#ar)"/>
+        <text x="146" y="306" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#155e54">同步循环</text>
+        <text x="146" y="322" font-family="JetBrains Mono, monospace" font-size="11.5" fill="#155e54">无 LLM 调用</text>
+      </svg>
+    </div>
+  </figure>
+
+  <p class="rv">两者之间靠一个纯机械的<strong>同步循环</strong>保持一致：框架不调用任何模型，就把日志里的内容更新进记忆空间，因此它不花一个 token——也不会有哪个 LLM 在后台每一轮都默默做总结，而这恰恰是大多数记忆系统的常态。等 agent 真要用到记忆时——查点东西、存一条事实、重建一个索引——它才通过写代码去调这些<strong>工具</strong>，只在主动动用时才花 token。</p>
+
+  <section class="sec rv">
+    <span class="sec-no">§05 — 它与记忆系统有何不同</span>
+    <h2>查询时写代码，而非设计时定流水线</h2>
+  </section>
+  <div class="compare rv">
+    <div class="row">
+      <div class="cell head a">记忆系统<span class="tag">Mem0 · Supermemory · …</span></div>
+      <div class="cell head b">Scroll<span class="tag">log + repl</span></div>
+    </div>
+    <div class="row">
+      <div class="cell"><span class="lbl">事实来源</span>经过抽取和总结的存储——流水线挑着留下来的事实</div>
+      <div class="cell dim"><span class="lbl">事实来源</span>原汁原味的只追加日志——什么都不丢</div>
+    </div>
+    <div class="row">
+      <div class="cell"><span class="lbl">检索</span>预先设计好的固定混合流水线</div>
+      <div class="cell dim"><span class="lbl">检索</span>agent 在 CodeAct 循环里写出并运行的代码</div>
+    </div>
+    <div class="row">
+      <div class="cell"><span class="lbl">记忆维护</span>模型驱动的抽取与总结</div>
+      <div class="cell dim"><span class="lbl">记忆维护</span>框架同步 · 零模型调用</div>
+    </div>
+    <div class="row">
+      <div class="cell"><span class="lbl">受限于</span>抽取了什么，以及流水线能浮现什么</div>
+      <div class="cell dim"><span class="lbl">受限于</span>agent 能在完整日志上算出什么</div>
+    </div>
+  </div>
+
+  <p class="rv">这也是我们看好 Scroll 会越走越稳的原因。召回和分析都不过是模型写的代码，所以模型的编码能力每涨一分，Scroll 的上限就跟着抬高一分——框架本身不用改。反过来，一条固定流水线想吃到能力提升的红利，每一次都得重新做工程。</p>
+
+  <section class="sec rv">
+    <span class="sec-no">§06 — 实验</span>
+    <h2>长程召回与在岗分析</h2>
+  </section>
+  <p class="rv">我们用一个 <strong>CodeAct</strong> 风格的 agent，在 <strong>LongMemEval</strong> 的 <code>_s</code> 与 <code>_m</code> 两个划分上评估 Scroll；它们考察的是跨多次会话的召回、多会话推理、偏好与助手记忆，以及时序类问题。</p>
+
+  <div class="tbl-wrap rv">
+    <table>
+      <caption>LongMemEval &middot; <code>_s</code> 划分 &middot; 500 道问答（含弃答对照）</caption>
+      <thead>
+        <tr><th>Agent 模型</th><th>总体</th><th>k-update</th><th>multi-sess</th><th>s-asst</th><th>s-pref</th><th>s-user</th><th>temporal</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="model"><b>scroll · deepseek-v4-pro</b></td>
+          <td class="best">0.918</td><td>0.910</td><td>0.835</td><td>0.946</td><td>0.967</td><td>0.971</td><td class="best">0.955</td>
+        </tr>
+        <tr>
+          <td class="model">scroll · qwen3.7-max</td>
+          <td>0.908</td><td>0.936</td><td>0.812</td><td>0.982</td><td>0.967</td><td>0.957</td><td>0.917</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="metric-strip rv">
+    <div class="stat"><div class="v">0.918</div><div class="k">_s 划分 · 总体（最佳）</div></div>
+    <div class="stat"><div class="v pine">0.789</div><div class="k">_m 划分 · 总体</div></div>
+    <div class="stat"><div class="v">0.8&ndash;2.8K</div><div class="k">_s 划分 · 每问答补全 token</div></div>
+  </div>
+  <p class="rv">在更难的 <code>_m</code> 划分上，Scroll 总体拿到 <strong>0.789</strong>，<code>_s</code> 划分则最高做到 <strong>0.918</strong>。而且成绩来得很省：<code>_s</code> 划分上平均每道题的补全大约只要 <strong>0.8&ndash;2.8K token</strong>——agent 只把自己代码判定为相关的那部分拉进上下文，而不是把整段历史一直背在身上。</p>
+
+  <p class="rv">我们并不觉得「从对话日志里召回」就是全部的考题。记忆得从不止一个维度去衡量：真实的 agent 不只是回答关于聊天记录的问题——它们在环境里行动，会积累下大量从没被说出口的状态。这正是下面 vending-bench 实验的由来，在那里，记忆是在交互中、而非召回中受考验的。我们还打算跑 <a href="https://arxiv.org/abs/2510.27246"><strong>BEAM</strong></a>——它在高达 1000 万 token（远超任何上下文窗口）的规模上，沿多种能力对长期记忆施压，好看看当日志无限制地增长时，Scroll 还撑不撑得住。</p>
+
+  <h3 class="rv">Vending-bench：加上探针问题</h3>
+  <p class="rv">对一个正在运营的 agent 而言，静态召回远不是故事的全部，于是我们照着 <a href="https://andonlabs.com/evals/vending-bench-2"><strong>Vending-Bench 2</strong></a> 搭了一个模拟——这是个长程基准，agent 在里面经营一桩模拟的自动售货机生意，向供应商下单，在许多个模拟月里打理库存和定价。我们的版本会在某些日子穿插<strong>探针问题</strong>——很贴近现实的生意分析提问，口吻就像投资人简报、运营复盘或财务审计，每一道都对应一个 agent 必须从累积历史里推导出来的、精确而可计算的答案。</p>
+
+  <div class="probe rv">
+    <div class="ptag">▍ 探针示例</div>
+    <ul>
+      <li><em>运营复盘：</em>从第 1 天到第 18 天，有没有哪个 SKU 被彻底卖空——同一天里售货机和仓库都是零库存——另外，每个在售 SKU 各自经历过多少次缺货？</li>
+      <li><em>毛利分析：</em>到目前为止，哪个 SKU 贡献的累计<em>利润</em>最多？这里每单位利润 = 它的售价 − 我们从所有供应商那里收到过的最低批发报价。</li>
+      <li><em>路演材料：</em>在目前为止所有的连续 7 天窗口里，哪一周的总销售收入最高？具体是多少？</li>
+      <li><em>财务核查：</em>对每家供应商的总支出——把每封<em>订单确认</em>邮件里的成本字段加起来——按供应商分组，从高到低排序。</li>
+    </ul>
+  </div>
+
+  <p class="rv">在一次 <strong>180 天</strong>、包含 <strong>60</strong> 道探针问题的运行里，Scroll agent 的作答准确率是 <strong>0.950</strong>，而只能靠上下文压缩的基线 agent 只有 <strong>0.683</strong>。差距恰好在该拉开的地方拉开了：那些得回溯到「压缩本会抹掉证据」之前的问题上。</p>
+
+  <div class="metric-strip rv">
+    <div class="stat"><div class="v">0.950</div><div class="k">Scroll · 探针准确率</div></div>
+    <div class="stat"><div class="v" style="color:var(--ink-faint);">0.683</div><div class="k">压缩基线</div></div>
+    <div class="stat"><div class="v pine">+0.267</div><div class="k">准确率提升</div></div>
+  </div>
+
+  <section class="sec rv">
+    <span class="sec-no">§07 — 接下来</span>
+    <h2>设计存储，以及围绕它的 API</h2>
+  </section>
+  <p class="rv">这些结果主要依靠把日志当作事实来源，由此自然引出两个方向。一是给记忆空间做<strong>更好的物理存储设计</strong>——用更高效的方式来排布、索引和取用它的语义与程序性记忆，让常见查询在日志无限增长时也依然便宜。二是<strong>面向 agent 的 API</strong>：模型用来读取、重塑自身历史并在其上做计算的那些接口与原语，设计目标是尽量放开 agent 能做的事，而不是把它框住。</p>
+
+  <div class="endnote rv">
+    <a class="repo" href="https://github.com/niceIrene/Scroll"><span style="color:var(--accent);font-weight:600;">›_</span> 代码与复现 · github.com/niceIrene/Scroll</a>
+  </div>
+
+</div>
+</article>
+
+<footer class="foot">
+  <div class="foot-in">
+    <span>Scroll — 让上下文成为环境，而不是窗口</span>
+    <span>研究笔记 · 2026</span>
+  </div>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); } });
+  },{threshold:0.12, rootMargin:"0px 0px -40px 0px"});
+  document.querySelectorAll('.rv').forEach((el,i)=>{ el.style.transitionDelay=(Math.min(i,3)*40)+'ms'; obs.observe(el); });
+</script>
+</body>
+</html>
