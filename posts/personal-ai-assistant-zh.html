@@ -1,148 +1,227 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<title>聊天框之外：个人 AI 助手到底是什么 - Yin Lin</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>聊天框之外：个人 AI 助手到底是什么</title>
 <meta name="description" content="个人 AI 助手到底是什么——一旦你不再默认它的唯一消费者是人类，它其实是一个拥有可插拔接口、面向人类、其他 agent 和应用的 agent 系统。以及我们应该怎么构建它，Copilot Digest 与 MCP 作为具体示例。">
-<link href="../css/bootstrap.css" type="text/css" rel="stylesheet" media="all">
-<link href="../css/style.css" type="text/css" rel="stylesheet" media="all">
-<link href='//fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:wght@400;600;700&display=swap' rel='stylesheet'>
-<link rel="icon" href="../images/favicon.ico" />
+<link rel="icon" href="../images/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-	.post-banner { background: #1a7a6d; color: #fff; padding: 2.5em 0 1.5em; }
-	.post-back { display: inline-block; margin-bottom: 0.8em; color: #e8f5f1; text-decoration: none; font-size: 0.9em; }
-	.post-back:hover { color: #fff; text-decoration: underline; }
-	.post-banner .post-date { color: #e8f5f1; font-size: 0.85em; font-family: 'Inter', sans-serif; margin-bottom: 0.4em; }
-	.post-banner h1 { color: #fff; font-size: 2em; margin: 0 0 0.4em; font-family: 'Source Serif 4', serif; line-height: 1.3; }
-	.post-banner .byline { color: #e8f5f1; font-size: 0.9em; font-family: 'Inter', sans-serif; margin: 0; }
-	.lang-toggle { float: right; margin-top: -1.6em; }
-	.lang-toggle a { color: #e8f5f1; text-decoration: none; font-size: 0.85em; border: 1px solid #e8f5f1; padding: 0.25em 0.7em; border-radius: 3px; }
-	.lang-toggle a:hover { background: #fff; color: #1a7a6d; }
-	.post-body { max-width: 720px; margin: 0 auto; font-size: 1.05em; line-height: 1.85; color: #2a2a2a; }
-	.post-body p { margin: 0 0 1.1em; }
-	.post-body h2 { font-size: 1.35em; margin: 1.8em 0 0.6em; color: #1a1a1a; font-family: 'Source Serif 4', serif; }
-	.post-body h3 { font-size: 1.12em; margin: 1.4em 0 0.5em; color: #1a1a1a; font-family: 'Source Serif 4', serif; }
-	.post-body a { color: #1a7a6d; }
-	.post-body code { background: #f4f4f4; padding: 0.1em 0.35em; border-radius: 3px; font-size: 0.92em; font-family: 'Menlo', 'Consolas', monospace; }
-	.post-body pre { background: #f4f4f4; padding: 1em 1.2em; border-radius: 4px; overflow-x: auto; font-size: 0.9em; line-height: 1.55; margin: 0 0 1.3em; }
-	.post-body pre code { background: transparent; padding: 0; font-size: inherit; }
-	.post-body ul { margin: 0 0 1.2em; padding-left: 1.4em; }
-	.post-body li { margin-bottom: 0.5em; }
-	.post-body hr { border: none; border-top: 1px solid #ddd; margin: 2.2em 0; }
-	.post-body .refs { font-size: 0.95em; }
-	.post-body .refs li { margin-bottom: 0.7em; }
-	.video-embed { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin: 1.4em 0 0.5em; border-radius: 4px; background: #000; }
-	.video-embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-	.video-caption { text-align: center; font-size: 0.9em; color: #666; margin: 0 0 1.5em; font-style: italic; }
+  :root{
+    --paper:#ffffff;
+    --paper-3:#e9efed;
+    --ink:#1a1a1a;
+    --ink-soft:#444444;
+    --ink-faint:#8a8a8a;
+    --line:#e2e8e6;
+    --accent:#1a7a6d;
+    --accent-deep:#155e54;
+    --display:"Fraunces","Noto Serif SC",Georgia,serif;
+    --body:"Newsreader","Noto Serif SC",Georgia,serif;
+    --mono:"JetBrains Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:20px;
+    line-height:1.85;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+
+  .wrap{max-width:760px;margin:0 auto;padding:0 28px;}
+
+  /* ---- masthead ---- */
+  header.top{border-bottom:1px solid var(--line);}
+  .masthead{max-width:760px;margin:0 auto;padding:18px 28px;display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);gap:14px;}
+  .masthead .left,.masthead .right{display:flex;align-items:baseline;gap:14px;}
+  .masthead .brand{color:var(--accent);font-weight:600;}
+  .masthead a{color:var(--ink-faint);text-decoration:none;border-bottom:1px solid transparent;transition:color .15s ease,border-color .15s ease;}
+  .masthead a:hover{color:var(--accent);border-color:var(--accent);}
+
+  /* ---- hero ---- */
+  .hero{padding:64px 0 26px;}
+  .kicker{font-family:var(--mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 24px;display:flex;align-items:center;gap:12px;}
+  .kicker::before{content:"";width:30px;height:1.5px;background:var(--accent);display:inline-block;}
+  h1.title{
+    font-family:var(--display);
+    font-weight:600;
+    font-size:clamp(36px,5.8vw,56px);
+    line-height:1.15;
+    letter-spacing:-.01em;
+    margin:0 0 .42em;
+    font-optical-sizing:auto;
+  }
+  h1.title em{font-style:normal;color:var(--accent);}
+  .standfirst{font-size:21px;line-height:1.6;color:var(--ink-soft);max-width:34em;margin:0;font-weight:400;}
+  .byline{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);font-family:var(--mono);font-size:13px;color:var(--ink-faint);display:flex;flex-wrap:wrap;gap:8px 22px;letter-spacing:.02em;}
+  .byline b{color:var(--ink-soft);font-weight:500;}
+
+  /* ---- body type ---- */
+  article{padding:8px 0 40px;}
+  .sec{padding:42px 0 4px;}
+  .sec-no{font-family:var(--mono);font-size:13px;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;display:block;margin-bottom:10px;}
+  h2{font-family:var(--display);font-weight:600;font-size:clamp(25px,3.4vw,32px);line-height:1.25;letter-spacing:-.005em;margin:0 0 .55em;}
+  h3{font-family:var(--display);font-weight:600;font-size:21px;margin:1.5em 0 .35em;}
+  p{margin:0 0 1.15em;}
+  article a{color:var(--accent-deep);text-decoration:underline;text-decoration-color:rgba(26,122,109,.35);text-underline-offset:3px;}
+  article a:hover{text-decoration-color:var(--accent);}
+  strong{font-weight:600;}
+  em.term{font-style:normal;color:var(--accent-deep);font-weight:600;}
+  .lead{font-size:21px;line-height:1.7;color:var(--ink);}
+  code{font-family:var(--mono);font-size:.82em;background:var(--paper-3);border:1px solid var(--line);border-radius:4px;padding:.06em .36em;color:var(--accent-deep);}
+
+  /* ---- references ---- */
+  .refs{margin:42px 0 0;padding-top:26px;border-top:1px solid var(--line);}
+  .refs h3{font-size:18px;margin:0 0 .7em;}
+  .refs ol{margin:0;padding-left:22px;}
+  .refs li{font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--ink-soft);margin-bottom:12px;}
+  .refs li a{color:var(--accent-deep);}
+  footer.foot{border-top:1px solid var(--line);margin-top:56px;}
+  .foot-in{max-width:760px;margin:0 auto;padding:30px 28px 60px;font-family:var(--mono);font-size:12px;color:var(--ink-faint);letter-spacing:.03em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+  @media (max-width:620px){
+    body{font-size:18px;}
+  }
 </style>
 </head>
 <body>
-	<div class="post-banner">
-		<div class="container">
-			<a href="../blog_zh.html" class="post-back">&larr; 所有文章</a>
-			<div class="lang-toggle"><a href="personal-ai-assistant.html">English</a></div>
-			<div class="post-date">2026-04-20 · 约 5 分钟阅读</div>
-			<h1>聊天框之外：个人 AI 助手到底是什么</h1>
-			<p class="byline">作者：Yin 与 Claude Opus 4.7</p>
-		</div>
-	</div>
+<h1 class="sr-only">聊天框之外：个人 AI 助手是一个拥有可插拔接口、面向人类、其他 agent 和应用的 agent 系统，而不是聊天机器人</h1>
 
-	<div class="section">
-		<div class="container">
-			<div class="post-body">
-				<p>大多数人对 AI 助手的体验就是浏览器里的一个聊天框。输入问题，阅读回答，关闭标签页。好用是好用，但这样用其实是把它当搜索引擎在使——而不是当助手。真正的助手应该知道你关心什么，替你做事，偶尔还能告诉你一些你没想到要问的事情。</p>
+<header class="top">
+  <div class="masthead">
+    <span class="left"><a href="../blog_zh.html">&larr; 所有文章</a><span class="brand">个人智能体</span></span>
+    <span class="right"><a href="personal-ai-assistant.html">English</a><span>随笔</span></span>
+  </div>
+</header>
 
-				<p>一批开源项目正在试图构建这样的东西——OpenClaw (<a href="https://docs.openclaw.ai/">docs.openclaw.ai</a>)、QwenPaw (<a href="https://github.com/agentscope-ai/QwenPaw">github</a>)、Hermes Agent (<a href="https://hermes-agent.nousresearch.com/">hermes-agent.nousresearch.com</a>) 等等。这篇文章想讨论两个问题：<em>个人助手到底是什么？我们应该怎么构建它？</em>我的观点是，"一个能帮你操作 PC 的聊天机器人"这种常见框架太窄了。个人助手更应该被理解成一个 agent 系统：它既可以直接和<strong>人</strong>交互（直接在控制台里使用它，或通过 Slack 等消息渠道跟它对话）、也可以被另一个 <strong>agent</strong> 调用（一个研究 agent 让它给十篇新论文排序；一个项目管理 agent 让它起草一封给客户的邮件）、或被一个<strong>应用</strong>集成（IDE 把它嵌进来做代码推理；CRM 调用它生成客户沟通文案；像 Redfin 这样的站点支持它，让 agent 替用户去与房源、成交对比、看房预约交互），还可以自己按计划在后台跑定时任务，主动把结果推给你（或推给上面任何一方），而不是等着被问。这些情况下核心都是同一个——变的只是接口。我也会介绍我基于 QwenPaw 搭的一个小 demo——Copilot Digest。</p>
+<div class="wrap">
+  <section class="hero">
+    <p class="kicker">个人 AI 智能体</p>
+    <h1 class="title">聊天框之外：个人 AI 助手<em>到底</em>是什么</h1>
+    <p class="standfirst">一旦你不再默认它的唯一消费者是人类，助手就显出本来面目——同一个核心，多种接口：面向人、面向 agent、面向应用。</p>
+    <div class="byline">
+      <span>作者：<b>Yin</b> 与 Claude Opus 4.7</span>
+      <span>2026 年 4 月</span>
+      <span>约 5 分钟阅读</span>
+    </div>
+  </section>
+</div>
 
-				<h2>个人助手 vs. 聊天机器人</h2>
+<article>
+<div class="wrap">
 
-				<p>我说"个人助手"，是指：一个持续运行在你的机器（或你控制的服务器）上的程序，能访问本地文件和工具，连接你日常使用的消息渠道，并且可以在你不在场的情况下执行操作。上述三个项目都能接入你已经在用的消息平台——Slack、Discord、Telegram、WhatsApp、iMessage、邮件等等 (OpenClaw, 2025; QwenPaw, 2025; Nous Research, 2025)。它们也越来越多地支持标准工具协议——MCP 面向 Claude.ai、IDE 这类 LLM 宿主应用，ACP 面向其他 agent——让非人类的调用方无需定制集成就能接进来。</p>
+  <p class="lead">大多数人对 AI 助手的体验就是浏览器里的一个聊天框。输入问题，阅读回答，关闭标签页。好用是好用，但这样用其实是把它当搜索引擎在使——而不是当助手。真正的助手应该知道你关心什么，替你做事，偶尔还能告诉你一些你没想到要问的事情。</p>
 
-				<p>仅此一点就是不错的体验提升，但另一个有意思的部分是你<em>没有</em>在跟它对话的时候发生的事情。</p>
+  <p>一批开源项目正在试图构建这样的东西——OpenClaw (<a href="https://docs.openclaw.ai/">docs.openclaw.ai</a>)、QwenPaw (<a href="https://github.com/agentscope-ai/QwenPaw">github</a>)、Hermes Agent (<a href="https://hermes-agent.nousresearch.com/">hermes-agent.nousresearch.com</a>) 等等。这篇文章想讨论两个问题：<em>个人助手到底是什么？我们应该怎么构建它？</em>我的观点是，"一个能帮你操作 PC 的聊天机器人"这种常见框架太窄了。个人助手更应该被理解成一个 agent 系统：它既可以直接和<strong>人</strong>交互（直接在控制台里使用它，或通过 Slack 等消息渠道跟它对话）、也可以被另一个 <strong>agent</strong> 调用（一个研究 agent 让它给十篇新论文排序；一个项目管理 agent 让它起草一封给客户的邮件）、或被一个<strong>应用</strong>集成（IDE 把它嵌进来做代码推理；CRM 调用它生成客户沟通文案；像 Redfin 这样的站点支持它，让 agent 替用户去与房源、成交对比、看房预约交互），还可以自己按计划在后台跑定时任务，主动把结果推给你（或推给上面任何一方），而不是等着被问。这些情况下核心都是同一个——变的只是接口。我也会介绍我基于 QwenPaw 搭的一个小 demo——Copilot Digest。</p>
 
-				<h3>心跳与定时任务</h3>
+  <section class="sec">
+    <span class="sec-no">§01 — 框架</span>
+    <h2>个人助手 vs. 聊天机器人</h2>
+  </section>
+  <p>我说"个人助手"，是指：一个持续运行在你的机器（或你控制的服务器）上的程序，能访问本地文件和工具，连接你日常使用的消息渠道，并且可以在你不在场的情况下执行操作。上述三个项目都能接入你已经在用的消息平台——Slack、Discord、Telegram、WhatsApp、iMessage、邮件等等 (OpenClaw, 2025; QwenPaw, 2025; Nous Research, 2025)。它们也越来越多地支持标准工具协议——MCP 面向 Claude.ai、IDE 这类 LLM 宿主应用，ACP 面向其他 agent——让非人类的调用方无需定制集成就能接进来。</p>
 
-				<p>这些项目通常都提供某种形式的定时主动行为。它们称之为<strong>心跳（heartbeat）</strong>：你在一个 markdown 文件中写下问题，设置间隔——比如早 8 点到晚 10 点之间每两小时一次——助手会按计划回答这些问题，并将回复推送到你最近聊天的渠道。你一觉醒来看到一条消息："昨晚有三篇关于检索增强生成的新预印本发布，以下是排序摘要。"你没有问过，它只是知道该去查。</p>
+  <p>仅此一点就是不错的体验提升，但另一个有意思的部分是你<em>没有</em>在跟它对话的时候发生的事情。</p>
 
-				<p>独立的定时任务系统允许你调度各自独立的工作，每个有自己的时间和推送目标。早上 8 点的摘要推送、周五的合规检查、站会前的 PR 评审提醒。这些功能共同将助手从你去"拉取"的工具，变成了主动"推送"给你的存在。</p>
+  <h3>心跳与定时任务</h3>
 
-				<p>这是一个很棒的概念——确实好用。但日复一日地使用之后，会暴露出一些从外部很容易低估的摩擦。</p>
+  <p>这些项目通常都提供某种形式的定时主动行为。它们称之为<strong>心跳（heartbeat）</strong>：你在一个 markdown 文件中写下问题，设置间隔——比如早 8 点到晚 10 点之间每两小时一次——助手会按计划回答这些问题，并将回复推送到你最近聊天的渠道。你一觉醒来看到一条消息："昨晚有三篇关于检索增强生成的新预印本发布，以下是排序摘要。"你没有问过，它只是知道该去查。</p>
 
-				<h2>成本与安全：不太舒服的部分</h2>
+  <p>独立的定时任务系统允许你调度各自独立的工作，每个有自己的时间和推送目标。早上 8 点的摘要推送、周五的合规检查、站会前的 PR 评审提醒。这些功能共同将助手从你去"拉取"的工具，变成了主动"推送"给你的存在。</p>
 
-				<h3>Token 消耗</h3>
+  <p>这是一个很棒的概念——确实好用。但日复一日地使用之后，会暴露出一些从外部很容易低估的摩擦。</p>
 
-				<p>每一次心跳触发都是一次完整的 LLM 推理调用。每一个定时任务都是一轮对话。一个每 30 分钟触发一次、覆盖 14 小时活跃窗口的心跳，每天上限约 28 次调用——而你还没有亲自问过一个问题。如果你使用的是云端模型（大多数人都是，因为在长链路 agentic 任务上，云端模型仍然比消费级硬件上能跑的本地模型更稳定可靠），成本积累得很快。根据模型和上下文长度的不同，单个常驻助手仅定时活动的 API 费用就能轻松达到每月数十美元。</p>
+  <section class="sec">
+    <span class="sec-no">§02 — 不太舒服的部分</span>
+    <h2>成本与安全</h2>
+  </section>
 
-				<p>你可以通过缩短上下文、使用更便宜的模型或拉长间隔来缓解，但有一个根本性的矛盾：你希望助手越主动、越有上下文感知能力，它消耗的 token 就越多。天下没有免费的午餐。</p>
+  <h3>Token 消耗</h3>
 
-				<h3>安全</h3>
+  <p>每一次心跳触发都是一次完整的 LLM 推理调用。每一个定时任务都是一轮对话。一个每 30 分钟触发一次、覆盖 14 小时活跃窗口的心跳，每天上限约 28 次调用——而你还没有亲自问过一个问题。如果你使用的是云端模型（大多数人都是，因为在长链路 agentic 任务上，云端模型仍然比消费级硬件上能跑的本地模型更稳定可靠），成本积累得很快。根据模型和上下文长度的不同，单个常驻助手仅定时活动的 API 费用就能轻松达到每月数十美元。</p>
 
-				<p>这些助手拥有真实的工具——文件读写、shell 执行、网页浏览。各个项目采取了不同的防护策略：QwenPaw 叠加了基于模式匹配的工具守卫、文件路径限制和技能（skill）安全扫描 (QwenPaw 安全文档)；OpenClaw 使用 DM 配对、白名单和可选的 Docker 沙箱 (OpenClaw 安全文档)；Hermes Agent 提供六种执行后端（local、Docker、SSH、Daytona、Singularity、Modal），支持容器加固和隔离子助手 (Nous Research, 2025)。</p>
+  <p>你可以通过缩短上下文、使用更便宜的模型或拉长间隔来缓解，但有一个根本性的矛盾：你希望助手越主动、越有上下文感知能力，它消耗的 token 就越多。天下没有免费的午餐。</p>
 
-				<p>这些都是有意义的防护措施，但并非无懈可击。模式匹配检测有盲区。提示注入——通过恶意输入诱使助手执行非预期操作——仍是一个开放性问题 (Greshake et al., 2023)。在生产环境中运行这些助手意味着要接受一定的运维开销：监控日志、审查工具调用、保持规则更新。</p>
+  <h3>安全</h3>
 
-				<h2>我们在往哪里走</h2>
+  <p>这些助手拥有真实的工具——文件读写、shell 执行、网页浏览。各个项目采取了不同的防护策略：QwenPaw 叠加了基于模式匹配的工具守卫、文件路径限制和技能（skill）安全扫描 (QwenPaw 安全文档)；OpenClaw 使用 DM 配对、白名单和可选的 Docker 沙箱 (OpenClaw 安全文档)；Hermes Agent 提供六种执行后端（local、Docker、SSH、Daytona、Singularity、Modal），支持容器加固和隔离子助手 (Nous Research, 2025)。</p>
 
-				<p>整个生态在从两个方向扩展同一个核心——一条来自用户，一条来自项目本身。</p>
+  <p>这些都是有意义的防护措施，但并非无懈可击。模式匹配检测有盲区。提示注入——通过恶意输入诱使助手执行非预期操作——仍是一个开放性问题 (Greshake et al., 2023)。在生产环境中运行这些助手意味着要接受一定的运维开销：监控日志、审查工具调用、保持规则更新。</p>
 
-				<p>在用户这一侧，主要的扩展机制是<strong>技能（skills）</strong>：领域特定的能力包（一个研究技能、一个代码评审技能、一个客户沟通技能），可以插进 agent 运行时，教它新的本领。因为技能生活在运行时之上，助手可以在边缘变得更聪明，而底层项目不必为此发新版本——任何人都可以通过写或装一个技能来扩展自己的助手。</p>
+  <section class="sec">
+    <span class="sec-no">§03 — 我们在往哪里走</span>
+    <h2>我们在往哪里走</h2>
+  </section>
 
-				<p>在项目本身这一侧，工作沿两条互补的轴线推进。第一条是<strong>接口支持</strong>：面向人的消息渠道越来越多，同时 MCP 和 ACP 在整个生态中陆续落地，让 agent 和 LLM 宿主类应用都能无需定制集成就接进来。第二条是<strong>更强的 agent harness</strong>：运行时本身在变得更强。以 Hermes Agent 为例，它是<strong>自我改进（self-improving）</strong>的——它会把完成过的复杂任务蒸馏成可复用的技能、在使用中迭代这些技能，并周期性地把学到的东西持久化到 <code>MEMORY.md</code> 里 (Nous Research, 2025)。更好的工具调用循环、更好的记忆、更好的安全护栏——天花板在上移的同时，地板也在抬升。</p>
+  <p>整个生态在从两个方向扩展同一个核心——一条来自用户，一条来自项目本身。</p>
 
-				<h2>一个小 demo：Copilot Digest</h2>
+  <p>在用户这一侧，主要的扩展机制是<strong>技能（skills）</strong>：领域特定的能力包（一个研究技能、一个代码评审技能、一个客户沟通技能），可以插进 agent 运行时，教它新的本领。因为技能生活在运行时之上，助手可以在边缘变得更聪明，而底层项目不必为此发新版本——任何人都可以通过写或装一个技能来扩展自己的助手。</p>
 
-				<p>为了将这一点付诸实践，我基于 QwenPaw 构建了一个名为 <strong>Copilot Digest</strong> (<a href="https://github.com/niceIrene/QwenPaw/tree/yin/copilot-digest">源码</a>) 的助手——可以把它想象成一个个性化的知识播客，帮你消化重要内容，在通勤、散步或做家务等碎片时间保持信息更新。它会摄取你发送给它、但没时间读的论文、文章、博客和新闻，然后将它们整理、排序、总结到一个本地知识库中。你可以浏览阅读列表、获取排序简报（"这周有什么值得关注的？"）、阅读完整文章摘要、深入讨论某篇论文、记录笔记和待办事项，以及导出编译报告。所有内容都以文件形式存储在你的机器上——一个包含索引、文章摘要、工作产出和导出的工作空间目录。</p>
+  <p>在项目本身这一侧，工作沿两条互补的轴线推进。第一条是<strong>接口支持</strong>：面向人的消息渠道越来越多，同时 MCP 和 ACP 在整个生态中陆续落地，让 agent 和 LLM 宿主类应用都能无需定制集成就接进来。第二条是<strong>更强的 agent harness</strong>：运行时本身在变得更强。以 Hermes Agent 为例，它是<strong>自我改进（self-improving）</strong>的——它会把完成过的复杂任务蒸馏成可复用的技能、在使用中迭代这些技能，并周期性地把学到的东西持久化到 <code>MEMORY.md</code> 里 (Nous Research, 2025)。更好的工具调用循环、更好的记忆、更好的安全护栏——天花板在上移的同时，地板也在抬升。</p>
 
-				<p>通过将定时任务指向你的 RSS 源或收藏链接，知识库会在你睡觉时自动增长。助手负责阅读、总结和归档；你只需出现并问有什么新的。这正是个人助手的用武之地——持续的、后台运行的工作，聊天机器人根本做不到。</p>
+  <section class="sec">
+    <span class="sec-no">§04 — 一个小 demo</span>
+    <h2>一个小 demo：Copilot Digest</h2>
+  </section>
 
-				<p>我最想让 Copilot Digest 做的第一件事，就是在我<em>不在</em>屏幕前的时候也能用它——通勤、散步、做家务。光有语音输入是不够的，我要的是完整的、脱手脱眼的<em>对话</em>——开口说话、听它回复、一路聊下去，全程不用碰手机。这正是 Claude.ai 的 voice mode 现成就能做到、而且做得很好的事。要在这些 agent 项目上自己搭一层能与之相当的语音对话（它们自带的聊天界面顶多支持语音输入，不支持完整的双向语音对话），本身就是另一个项目。</p>
+  <p>为了将这一点付诸实践，我基于 QwenPaw 构建了一个名为 <strong>Copilot Digest</strong> (<a href="https://github.com/niceIrene/QwenPaw/tree/yin/copilot-digest">源码</a>) 的助手——可以把它想象成一个个性化的知识播客，帮你消化重要内容，在通勤、散步或做家务等碎片时间保持信息更新。它会摄取你发送给它、但没时间读的论文、文章、博客和新闻，然后将它们整理、排序、总结到一个本地知识库中。你可以浏览阅读列表、获取排序简报（"这周有什么值得关注的？"）、阅读完整文章摘要、深入讨论某篇论文、记录笔记和待办事项，以及导出编译报告。所有内容都以文件形式存储在你的机器上——一个包含索引、文章摘要、工作产出和导出的工作空间目录。</p>
 
-				<p>我也不必自己做。只要能让 Claude.ai 去驱动我的 Copilot Digest agent，整套 voice mode 的体验就随之而来。MCP 就是那座桥：我把 Copilot Digest 暴露成一个 MCP 服务器，再作为自定义连接器注册到 Claude.ai 里，一个 LLM 宿主应用就变成了我本地 agent 的 voice mode 前端。agent 本身完全不用改。同一个核心，换一个消费者，语音对话就突然能用了。</p>
+  <p>通过将定时任务指向你的 RSS 源或收藏链接，知识库会在你睡觉时自动增长。助手负责阅读、总结和归档；你只需出现并问有什么新的。这正是个人助手的用武之地——持续的、后台运行的工作，聊天机器人根本做不到。</p>
 
-				<h2>开放讨论</h2>
+  <p>我最想让 Copilot Digest 做的第一件事，就是在我<em>不在</em>屏幕前的时候也能用它——通勤、散步、做家务。光有语音输入是不够的，我要的是完整的、脱手脱眼的<em>对话</em>——开口说话、听它回复、一路聊下去，全程不用碰手机。这正是 Claude.ai 的 voice mode 现成就能做到、而且做得很好的事。要在这些 agent 项目上自己搭一层能与之相当的语音对话（它们自带的聊天界面顶多支持语音输入，不支持完整的双向语音对话），本身就是另一个项目。</p>
 
-				<p>还有几个我仍在想的问题——目前这一波项目也没完全回答。</p>
+  <p>我也不必自己做。只要能让 Claude.ai 去驱动我的 Copilot Digest agent，整套 voice mode 的体验就随之而来。MCP 就是那座桥：我把 Copilot Digest 暴露成一个 MCP 服务器，再作为自定义连接器注册到 Claude.ai 里，一个 LLM 宿主应用就变成了我本地 agent 的 voice mode 前端。agent 本身完全不用改。同一个核心，换一个消费者，语音对话就突然能用了。</p>
 
-				<p><strong>agent、工具和调用方需要都跑在同一台机器上吗？</strong>最省事的情况是"是"。但实际很少如此——我希望能从手机上给跑在笔记本上的 agent 发消息（但我不想走消息渠道）；也希望在公司电脑上用 IDE 接入一台桌下 Mac mini 上的 agent。这两种场景都需要把 agent 暴露到宿主机之外，而每一条暴露路径都有安全成本。消息渠道会把 agent 敞开给任何能给它发消息的人——prompt injection 就成了现成的攻击面；而一旦 bot token 泄露，攻击者还能直接冒充 bot。直接把端口暴露到公网更糟：今年年初 Censys 扫到超过 21,000 个 OpenClaw 实例把 gateway 绑到了 <code>0.0.0.0</code> 而不是 <code>localhost</code>，其中很多泄露了 API key 和聊天记录 (<a href="https://censys.com/blog/openclaw-in-the-wild-mapping-the-public-exposure-of-a-viral-ai-assistant/">Censys, 2026</a>)。有几种做法值得考虑——每个接口面单独做认证（API key、OAuth）挡住没凭证的陌生人；每个调用方都有自己的白名单，让拿到 token 的人也只能做部分事；再把整套东西放进像 <a href="https://tailscale.com/">Tailscale</a> 这样的私有 overlay 网络里，让 agent 根本不用暴露到公网、连被敲门的机会都没有。</p>
+  <section class="sec">
+    <span class="sec-no">§05 — 开放讨论</span>
+    <h2>开放讨论</h2>
+  </section>
 
-				<p><strong>当 MCP、ACP 和消息渠道都不够用时怎么办？</strong>它们覆盖了常见场景，但本质上是通用型设计——为了服务尽可能多的调用方，只暴露所有人都能共用的那一小块能力。一个更高阶的构建者，如果想把助手深度嵌进一个产品里——带自定义状态、特定的 UI 语言、或某些没法用工具调用干净往返的操作——一定会撞墙。一个出口是项目本身给构建者提供 SDK，比如用来调用 <a href="https://qwenpaw.agentscope.io/docs/commands">"magic commands"</a>，把一些希望 agent 固定执行的操作沉淀下来——用户在对话框里输入的斜杠式快捷指令（比如 <code>/compact</code> 压缩上下文、<code>/clear</code> 清空会话），由构建者把它们映射到确定的操作上。好处是那些常用、希望行为稳定的操作能被固化下来；代价是这套指令只在认这套 SDK 的产品里能用。我猜做得好的助手最后会两条路都走：协议让别的系统能接进来，SDK 让构建者自己掌握面向用户的那一层。</p>
+  <p>还有几个我仍在想的问题——目前这一波项目也没完全回答。</p>
 
-				<h2>结语</h2>
+  <p><strong>agent、工具和调用方需要都跑在同一台机器上吗？</strong>最省事的情况是"是"。但实际很少如此——我希望能从手机上给跑在笔记本上的 agent 发消息（但我不想走消息渠道）；也希望在公司电脑上用 IDE 接入一台桌下 Mac mini 上的 agent。这两种场景都需要把 agent 暴露到宿主机之外，而每一条暴露路径都有安全成本。消息渠道会把 agent 敞开给任何能给它发消息的人——prompt injection 就成了现成的攻击面；而一旦 bot token 泄露，攻击者还能直接冒充 bot。直接把端口暴露到公网更糟：今年年初 Censys 扫到超过 21,000 个 OpenClaw 实例把 gateway 绑到了 <code>0.0.0.0</code> 而不是 <code>localhost</code>，其中很多泄露了 API key 和聊天记录 (<a href="https://censys.com/blog/openclaw-in-the-wild-mapping-the-public-exposure-of-a-viral-ai-assistant/">Censys, 2026</a>)。有几种做法值得考虑——每个接口面单独做认证（API key、OAuth）挡住没凭证的陌生人；每个调用方都有自己的白名单，让拿到 token 的人也只能做部分事；再把整套东西放进像 <a href="https://tailscale.com/">Tailscale</a> 这样的私有 overlay 网络里，让 agent 根本不用暴露到公网、连被敲门的机会都没有。</p>
 
-				<p>大多数人今天用 AI，还是在用搜索引擎的方式——打开、输入、关闭。上面提到的这些项目指向一种更丰富的可能：一个能按自己的节奏运行、能接受来自其他 agent 和应用的调用、能出现在你本来就在工作的地方的助手。</p>
+  <p><strong>当 MCP、ACP 和消息渠道都不够用时怎么办？</strong>它们覆盖了常见场景，但本质上是通用型设计——为了服务尽可能多的调用方，只暴露所有人都能共用的那一小块能力。一个更高阶的构建者，如果想把助手深度嵌进一个产品里——带自定义状态、特定的 UI 语言、或某些没法用工具调用干净往返的操作——一定会撞墙。一个出口是项目本身给构建者提供 SDK，比如用来调用 <a href="https://qwenpaw.agentscope.io/docs/commands">"magic commands"</a>，把一些希望 agent 固定执行的操作沉淀下来——用户在对话框里输入的斜杠式快捷指令（比如 <code>/compact</code> 压缩上下文、<code>/clear</code> 清空会话），由构建者把它们映射到确定的操作上。好处是那些常用、希望行为稳定的操作能被固化下来；代价是这套指令只在认这套 SDK 的产品里能用。我猜做得好的助手最后会两条路都走：协议让别的系统能接进来，SDK 让构建者自己掌握面向用户的那一层。</p>
 
-				<p>再往远一点想："个人（personal）"这个定位本身，也许也是一种自我限制。等 SDK 这一层真的被做起来、MCP 和 ACP 这些接口协议真的稳定下来之后，没有什么理由让这类系统永远停留在小众玩家手里——它完全可以成为默认形态，替代聊天机器人，成为大多数人接触 AI 的方式。今天的个人助手，也许就是明天人人都在用的智能体。</p>
+  <section class="sec">
+    <span class="sec-no">§06 — 结语</span>
+    <h2>结语</h2>
+  </section>
 
+  <p>大多数人今天用 AI，还是在用搜索引擎的方式——打开、输入、关闭。上面提到的这些项目指向一种更丰富的可能：一个能按自己的节奏运行、能接受来自其他 agent 和应用的调用、能出现在你本来就在工作的地方的助手。</p>
 
-				<hr />
+  <p>再往远一点想："个人（personal）"这个定位本身，也许也是一种自我限制。等 SDK 这一层真的被做起来、MCP 和 ACP 这些接口协议真的稳定下来之后，没有什么理由让这类系统永远停留在小众玩家手里——它完全可以成为默认形态，替代聊天机器人，成为大多数人接触 AI 的方式。今天的个人助手，也许就是明天人人都在用的智能体。</p>
 
-				<h3>参考文献</h3>
+  <div class="refs">
+    <h3>参考文献</h3>
+    <ol>
+      <li>Anthropic. "Model Context Protocol." <a href="https://modelcontextprotocol.io/">modelcontextprotocol.io</a></li>
+      <li>Censys (2026). "OpenClaw in the Wild: Mapping the Public Exposure of a Viral AI Assistant." <a href="https://censys.com/blog/openclaw-in-the-wild-mapping-the-public-exposure-of-a-viral-ai-assistant/">censys.com</a></li>
+      <li>Greshake, K., Abdelnabi, S., Mishra, S., Endres, C., Holz, T., &amp; Fritz, M. (2023). "Not what you've signed up for: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection." <em>AISec 2023.</em></li>
+      <li>Nous Research. Hermes Agent. <a href="https://hermes-agent.nousresearch.com/">hermes-agent.nousresearch.com</a></li>
+      <li>OpenClaw. Documentation and security model. <a href="https://docs.openclaw.ai/">docs.openclaw.ai</a></li>
+      <li>QwenPaw. 仓库：<a href="https://github.com/agentscope-ai/QwenPaw">github.com/agentscope-ai/QwenPaw</a>。</li>
+      <li>Copilot Digest skill specification. <a href="https://github.com/niceIrene/QwenPaw/blob/yin/copilot-digest/src/qwenpaw/agents/skills/copilot_digest/SKILL.md">SKILL.md</a></li>
+      <li>Cloudflare Tunnel. <a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/">developers.cloudflare.com/cloudflare-one/connections/connect-networks/</a></li>
+    </ol>
+  </div>
 
-				<ul class="refs">
-					<li>Anthropic. "Model Context Protocol." <a href="https://modelcontextprotocol.io/">modelcontextprotocol.io</a></li>
-					<li>Censys (2026). "OpenClaw in the Wild: Mapping the Public Exposure of a Viral AI Assistant." <a href="https://censys.com/blog/openclaw-in-the-wild-mapping-the-public-exposure-of-a-viral-ai-assistant/">censys.com</a></li>
-					<li>Greshake, K., Abdelnabi, S., Mishra, S., Endres, C., Holz, T., &amp; Fritz, M. (2023). "Not what you've signed up for: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection." <em>AISec 2023.</em></li>
-					<li>Nous Research. Hermes Agent. <a href="https://hermes-agent.nousresearch.com/">hermes-agent.nousresearch.com</a></li>
-					<li>OpenClaw. Documentation and security model. <a href="https://docs.openclaw.ai/">docs.openclaw.ai</a></li>
-					<li>QwenPaw. 仓库：<a href="https://github.com/agentscope-ai/QwenPaw">github.com/agentscope-ai/QwenPaw</a>。</li>
-					<li>Copilot Digest skill specification. <a href="https://github.com/niceIrene/QwenPaw/blob/yin/copilot-digest/src/qwenpaw/agents/skills/copilot_digest/SKILL.md">github.com/niceIrene/QwenPaw/blob/yin/copilot-digest/src/qwenpaw/agents/skills/copilot_digest/SKILL.md</a></li>
-					<li>Cloudflare Tunnel. <a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/">developers.cloudflare.com/cloudflare-one/connections/connect-networks/</a></li>
-				</ul>
-			</div>
-		</div>
-	</div>
+</div>
+</article>
 
-	<div class="footer">
-		<div class="container">
-			<div class="footer-inner">
-				<p style="text-align:center;color:#999;font-size:0.85em;margin:0;">&copy; Yin Lin</p>
-			</div>
-		</div>
-	</div>
-
-	<script src="../js/jquery-1.11.1.min.js"></script>
-	<script src="../js/bootstrap.js"></script>
+<footer class="foot">
+  <div class="foot-in">
+    <span>聊天框之外——个人 AI 助手到底是什么</span>
+    <span>随笔 · 2026</span>
+  </div>
+</footer>
 </body>
 </html>
