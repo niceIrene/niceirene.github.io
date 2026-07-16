@@ -50,18 +50,28 @@ ul, label { margin: 0; padding: 0; }
 }
 .banner-info {
 	background: url(../images/dott.png) repeat 0px 0px;
-	padding: 4em 0 3.5em;
+	padding: 4.75em 0 4.25em;
+}
+.banner .container {
+	max-width: 1040px;
 }
 .header-left {
 	float: left;
 	width: 25%;
 	padding-right: 2em;
 }
-.header-left img {
-	width: 100%;
+.profile-photo {
+	aspect-ratio: 1 / 1;
+	overflow: hidden;
 	border-radius: 4px;
-	border: 5px solid rgba(255,255,255,0.68);
 	box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+.profile-photo img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transform: scale(2.6) translateX(-6%);
 }
 .header-right {
 	float: left;
@@ -548,7 +558,7 @@ p {
 		width: 140px;
 		margin: 0 auto 1.2em;
 	}
-	.header-left img { border-radius: 50%; }
+	.profile-photo { border-radius: 50%; }
 	.header-right {
 		float: none;
 		width: 100%;
